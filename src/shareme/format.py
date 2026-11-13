@@ -7,19 +7,24 @@ v = 1
 hdr_fmt = ">8sBB16s8sQQ12s"
 hdr_sz = struct.calcsize(hdr_fmt)
 
-@dataclass(frozen=)
+@dataclass(frozen=True)
 class Hdr:
     saltBuf : bytes
     noncePfx : bytes
     fileSz : int
+    metaNonce : bytes
+    metaSz : int
 
 def packHdr(hdr : Hdr) -> bytes:
     if len(hdr.saltBuf) != saltLen:
         raise ValueError("Invalid salt size.")
     if len(hdr.noncePfx) != 8:
         raise ValueError("Invalid nonce prefix size.")
+    if len(hdr.metaNonce) != 12:
+        raise ValueError("Invalid metadata nonce size.")
     if hdr.fileSz < 0:
         raise ValueError("invalid file size.")
+    if hdr.
     return struct.pack(hdr_fmt, magic, v, 0, hdr.saltBuf, hdr.noncePfx, hdr.fileSz)
  
 def readHdr(dataBuf : bytes) -> Hdr:
