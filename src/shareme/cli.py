@@ -1,10 +1,13 @@
 import os
 import tempfile
 import typer
-from .crypto import derive_key, new_salt, n_nonce_prefix
-from .encoding import encode
-from .format import Header, pack_header
-from .stream import encrypt_stream
+import base64
+import binascii
+from pathlib import Path
+from .crypto import genMetaNonce, genNoncePfx, genSalt, kdfKey, openMeta, sealMeta
+from .encoding import encode, decode
+from .format import hdr_sz, Hdr, packHdr, readHdr
+from .stream import openStream, sealStream
 
 app = typer.Typer(
     name = "shareme",
