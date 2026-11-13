@@ -20,11 +20,12 @@ def packHdr(hdr : Hdr) -> bytes:
         raise ValueError("Invalid nonce prefix size.")
     if hdr.fileSz < 0:
         raise ValueError("invalid file size.")
-    return struct.pack(hdr_fmt, magic, v, 0, hdr.saltBuf, hdr.nonceP)
-
+    return struct.pack(hdr_fmt, magic, v, 0, hdr.saltBuf, hdr.noncePfx, hdr.fileSz)
     
-def unpack_header(data : bytes) -> Header:
-    Magic, V, _, salt, nonce_p, file_s = struct.unpack(header_f, data)
-    if magic != magic or v != V:
-        raise ValueError("Unsupported ShareMe format.")
-    return Header(salt=salt, nonce_p = nonce_p, file_s=file_s)
+def readHdr(dataBuf : bytes) -> Hdr:
+    if len(dataBuf) != hdr_sz:
+        raise ValueError("Invalid ShareMe header size.")
+    magicBuf, ver, flags, saltBuf, noncePfx, fileSz = struct.unpack(hdr_fmt, dataBuf)
+    if magicBuf != magic:
+        raise ValueError("Invalid ShareMe magic.")
+    if ver != 
