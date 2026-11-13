@@ -16,7 +16,7 @@ def new_salt() -> bytes:
 def derive_key(password : str, salt : bytes) -> bytes:
     return hash_secret_raw(secret=password.encode("utf-8"), salt= salt, time_cost=3, memory_cost=64*1024, parallelism=2, hash_len=key_s, type=Type.ID)
 
-def new_nonce_prefix() -> bytes:
+def n_nonce_prefix() -> bytes:
     return os.urandom(8)
 
 def chunk_nonce(prefix : bytes, index : int) -> bytes:
