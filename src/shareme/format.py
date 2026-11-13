@@ -36,10 +36,14 @@ def readHdr(dataBuf : bytes) -> Hdr:
         raise ValueError("Invalid ShareMe magic.")
     if ver != v:
         raise ValueError("Unsupported ShareMe Version.")
+    if len(saltBuf) != saltLen:
+        raise ValueError("Invalid salt size.")
     if len(metaNonce) != nonceLen:
         raise ValueError("Invalid metadata nonce size.")
-    if flags < 0:
+    if flags != 0:
         raise ValueError("Unsupported ShareMe flags.")
     if metaSz < 1:
         raise ValueError("Invalid metadata size.")
+    if fileSz < 1:
+        raise ValueError("Invalid File size.")
     return Hdr(saltBuf=saltBuf, noncePfx=noncePfx, fileSz=fileSz, metaNonce=metaNonce, metaSz=metaSz)
