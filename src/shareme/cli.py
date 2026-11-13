@@ -20,7 +20,14 @@ def encrypt(file : str, output : str = typer.Option(None, "-o")) -> None:
         raise typer.Exit(1)
     size = os.path.getsize(file)
     salt = new_salt()
+    nonce_p = n_nonce_prefix()
     key = derive_key(password, salt)
+    header = pack_header(Header(salt=salt, nonce_p=nonce_p, file_s=size))
+    with open(file, "rb") as source, tempfile.TemporaryFile("w+b") as temp:
+        temp.write(header)
+        encrypt_stream(source, temp, key, nonce_p)
+        temp.seek(0)
+        text = en
     typer.echo("Encryption key derived successfully.")
     typer.echo(f"Key size : {len(key)*8} bits.")
 
