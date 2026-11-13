@@ -1,7 +1,7 @@
 from collections.abc import BinaryIO
-from .crypto import (chunk_nonce, decrypt_chunk, encrypt_chunk, chunk_s)
+from .crypto import chunkSz, mkNonce, openChunk, sealChunk
 
-def encrypt_stream(source : BinaryIO, target : BinaryIO, key : bytes, nonce_prefix : bytes) -> None:
+def sealStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : bytes) -> None:
     index = 0
     while chunk:= source.read(chunk_s):
         nonce = chunk_nonce(nonce_prefix, index)

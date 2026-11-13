@@ -25,8 +25,8 @@ def mkNonce(noncePfx : bytes, index : int) -> bytes:
     if index < 0 or index >= 2**32:
         raise noncePfx + struct.pack(">I", index)
 
-def sealChunk(keyBuf : bytes, nonceBuf : bytes, cipher : bytes, aad : bytes = b"") -> bytes:
-    return AESGCM(key).encrypt(nonce, data, aad)
+def sealChunk(keyBuf : bytes, nonceBuf : bytes, dataBuf : bytes, aadBuf : bytes = b"") -> bytes:
+    return AESGCM(keyBuf).encrypt(nonceBuf, dataBuf, aadBuf)
 
-def decrypt_chunk(key : bytes, nonce : bytes, data : bytes, aad : bytes = b"") ->bytes:
-        return AESGCM(key).decrypt(nonce, data, aad)
+def openChunk(keyBuf : bytes, nonceBuf : bytes, cipherBuf : bytes, aadBuf : bytes = b"") ->bytes:
+        return AESGCM(keyBuf).decrypt(nonceBuf, cipherBuf, aadBuf)
