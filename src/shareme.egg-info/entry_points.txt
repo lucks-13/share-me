@@ -1,0 +1,2 @@
+[console_scripts]
+shareme = shareme.cli:app

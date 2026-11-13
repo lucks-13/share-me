@@ -7,3 +7,8 @@ like
 My Cli -> converts file into .txt -> share it via whatsapp or other messaging platform -> paste it into .txt -> convert back to source file by installing my cli on their system
 
 technically a quick and instant way to share file wirelessly
+
+
+List of area where i used ai.
+
+I dont know how to solve this issue so using google for this.

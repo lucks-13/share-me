@@ -1,0 +1,10 @@
+pyproject.toml
+src/shareme/__init__.py
+src/shareme/cli.py
+src/shareme.egg-info/PKG-INFO
+src/shareme.egg-info/SOURCES.txt
+src/shareme.egg-info/dependency_links.txt
+src/shareme.egg-info/entry_points.txt
+src/shareme.egg-info/requires.txt
+src/shareme.egg-info/top_level.txt
+src/tests/test_cli.py
