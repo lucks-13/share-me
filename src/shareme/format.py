@@ -1,5 +1,6 @@
 import struct
 from dataclasses import dataclass
+from .crypto import saltLen
 
 magic = b"share-me"
 v = 1
@@ -14,8 +15,14 @@ class Hdr:
 
 def packHdr(hdr : Hdr) -> bytes:
     if len(hdr.saltBuf) != saltLen:
-        raise ValueError("Invalid ")
+        raise ValueError("Invalid salt size.")
+    if len(hdr.noncePfx) != 8:
+        raise ValueError("Invalid nonce prefix size.")
+    if hdr.fileSz < 0:
+        raise ValueError("invalid file size.")
+    return struct.pack(hdr_fmt, magic, v, 0, hdr.saltBuf, hdr.nonceP)
 
+    
 def unpack_header(data : bytes) -> Header:
     Magic, V, _, salt, nonce_p, file_s = struct.unpack(header_f, data)
     if magic != magic or v != V:
