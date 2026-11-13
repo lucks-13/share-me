@@ -35,4 +35,7 @@ def openChunk(keyBuf : bytes, nonceBuf : bytes, cipherBuf : bytes, aadBuf : byte
         return AESGCM(keyBuf).decrypt(nonceBuf, cipherBuf, aadBuf)
 
 def sealMeta(keyBuf : bytes, nonceBuf : bytes, nameBuf : bytes) -> bytes:
-     return AESGCM
+     return AESGCM(keyBuf).encrypt(nonceBuf, nameBuf, b'shareme-meta')
+
+def openMeta(keyBuf : bytes, nonceBuf : bytes, cipherBuf : bytes) -> bytes:
+     return AESGCM(keyBuf).encrypt(nonceBuf, cipherBuf, b'shareme-meta')

@@ -3,6 +3,7 @@ from .crypto import chunkSz, mkNonce, openChunk, sealChunk
 
 def sealStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : bytes) -> None:
     index = 0
+    by
     while True:
         dataBuf = source.read(chunkSz)
         if not dataBuf:
