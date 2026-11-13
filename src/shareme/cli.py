@@ -103,11 +103,9 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
                     finally:
                         tempSrc.close()
                 except Exception:
-                    temp
-
-
-
-
+                    tempPath.unlink(missing_ok=True)
+                    raise 
+                
 
 if __name__ == "__main__":
     app()
