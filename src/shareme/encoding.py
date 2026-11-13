@@ -9,5 +9,6 @@ def encode(data : bytes) -> str:
 def decode(text : bytes) -> bytes:
     try:
         return base64.urlsafe_b64decode(text.encode("ascii"))
-    except:
-        
+    except (UnicodeEncodeError, binascii.Error, ValueError) as exc:
+        raise InvalidShareMeError("Invalid ShareMe encoding.") from exc
+
