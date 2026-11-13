@@ -6,7 +6,7 @@ app = typer.Typer(
 )
 
 @app.command()
-def enrypt() -> None:
+def encrypt() -> None:
     typer.echo("Encrypt command testing")
 
 @app.command()
