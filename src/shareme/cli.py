@@ -115,6 +115,6 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
             raise typer.BadParameter(str(exc)) from exc
     tempPath.replace(outPath)
     typer.echo(f"Decrypted : {inPath} -> {outPath}")
-        
+    
 if __name__ == "__main__":
     app()
