@@ -41,4 +41,3 @@ def openStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : 
     if byteCnt != fileSz:
         raise ValueError("File Size Verification failed.")
     return index, byteCnt
-
