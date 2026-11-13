@@ -1,4 +1,5 @@
 import os
+import struct
 
 from argon2.low_level import Type, hash_secret_raw
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -15,8 +16,13 @@ def new_salt() -> bytes:
 def derive_key(password : str, salt : bytes) -> bytes:
     return hash_secret_raw(secret=password.encode("utf-8"), salt= salt, time_cost=3, memory_cost=64*1024, parallelism=2, hash_len=key_s, type=Type.ID)
 
-def new_nonce() -> bytes:
-    return os.urandom(nonce_s)
+def new_nonce_prefix() -> bytes:
+    return os.urandom(8)
+
+def chunk_nonce(prefix : bytes, index : int) -> bytes:
+    if len(prefix) != 8:
+        raise ValueError("Nonce prefix must be ")
 
 def encrypt_chunk(key : bytes, nonce : bytes, data : bytes, aad : bytes = b"") -> bytes:
-    return AESGCM(key).decrypt(nonce)
+    return AESGCM(key).decrypt(nonce, data, aad)
+
