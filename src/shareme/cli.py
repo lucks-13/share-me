@@ -98,18 +98,16 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
                     tempSrc.write(chunkBuf)
                     tempSrc.seek(0)
                     openStream(tempSrc, tempFile, keyBuf, hdr.noncePfx, hdr.fileSz)
-            except Exception:
-                tempPath.unlink(missing_ok=True)
-                raise
+                    tempPath.replace(outPath)
             except InvalidTag as exc:
+                if tempPath is not None:
+                    tempPath.unlink(missing_ok=True)
                 raise typer.BadParameter("Incorrect password or corrupted ShareMe data") from exc
             except (ValueError, ShareMeError) as exc:
-                tempPath = locals().get("tempPath")
-            if tempPath is not None:
-                tempPath.unlink(missing_ok=True)
-            raise typer.BadParameter(str(exc)) from exc
-    tempPath.replace(outPath)
-    typer.echo(f"Decrypted : {inPath} -> {outPath}")
+                if tempPath is not None:
+                    tempPath.unlink(missing_ok=True)
+                    raise typer.BadParameter(str(exc)) from exc
+            typer.echo(f"Decrypted : {inPath} -> {outPath}")
 
 if __name__ == "__main__":
     app()
