@@ -16,5 +16,7 @@ def pack_header(header : Header) -> bytes:
     return magic, v,0,header.salt, header.nonce_p, header.file_s
 
 def unpack_header(data : bytes) -> Header:
-    Magic, , _, salt, nonce_p, file_s = struct.unpack(header_f, data)
-    if magic !
+    Magic, V, _, salt, nonce_p, file_s = struct.unpack(header_f, data)
+    if magic != magic or v != V:
+        raise ValueError("Unsupported ShareMe format.")
+    return Header(salt=salt, nonce_p = nonce_p, file_s=file_s)
