@@ -27,7 +27,7 @@ def openStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : 
         if len(sizeBuf) != 4:
             raise ValueError("Truncated chunk header.")
         cipherSz = int.from_bytes(sizeBuf, "big")
-        if cipherSz < 1:
+        if cipherSz < 17:
             raise ValueError("Invalid encrypted chunk size.")
         cipherBuf = source.read(cipherSz)
         if len(cipherBuf) != cipherSz:
@@ -36,6 +36,9 @@ def openStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : 
         aadBuf = index.to_bytes(8, "big")
         dataBuf = openChunk(keyBuf, nonceBuf, cipherBuf, aadBuf)
         target.write(dataBuf)
+        byteCnt += len(dataBuf)
         index+=1
-    return index
-    
+    if byteCnt != fileSz:
+        raise ValueError("File Size Verification failed.")
+    return index, byteCnt
+
