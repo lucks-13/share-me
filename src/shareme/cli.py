@@ -14,6 +14,14 @@ app = typer.Typer(
     help = "Secure text based file sharing cli."
 )
 
+def getPass(prompt : str) -> str:
+    return typer.prompt(prompt, hide_input=True)
+
+def readFileName(metaBuf : bytes) -> str:
+    try:
+        nameStr = metaBuf.decode("utf-8")
+    except UnicodeDecodeError as exc
+
 @app.command()
 def encrypt(file : str, output : str = typer.Option(None, "-o")) -> None:
     password = typer.prompt("Password", hide_input=True)
