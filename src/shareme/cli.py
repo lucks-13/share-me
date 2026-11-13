@@ -85,7 +85,12 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
         passIn = getPass("Password")
         keyBuf = kdfKey(passIn, hdr.saltBuf)
         try:
-            name
+            nameBuf = openMeta(keyBuf, hdr.metaNonce, metaBuf)
+            nameStr = readFileName(nameBuf)
+            if outPath is None:
+                outPath = Path(makeOpname(nameStr))
+            if outPath.exists():
+                
 
 
 
