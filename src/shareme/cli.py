@@ -3,6 +3,7 @@ import tempfile
 import typer
 import base64
 import binascii
+from cryptography.exceptions import InvalidTag
 from pathlib import Path
 from .crypto import genMetaNonce, genNoncePfx, genSalt, kdfKey, openMeta, sealMeta
 from .encoding import encode, decode
@@ -107,7 +108,7 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
                     raise
         except InvalidTag as exc:
             raise typer.BadParameter("Incorrect password or corrupted ShareMe data") from exc
-        except ValueError, ShareMeError as exc:
+        except (ValueError, ShareMeError) as exc:
             tempPath = locals().get("tempPath")
             if tempPath is not None:
                 tempPath.unlink(missing_ok=True)
