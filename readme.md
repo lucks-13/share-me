@@ -4,4 +4,6 @@ my plan for this project is to create a cli which converts a file into encrypted
 
 like 
 
-My Cli -> converts file into .txt -> share it via whatsapp or 
+My Cli -> converts file into .txt -> share it via whatsapp or other messaging platform -> paste it into .txt -> convert back to source file by installing my cli on their system
+
+technically a quick and instant way to share file wirelessly
