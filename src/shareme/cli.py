@@ -106,7 +106,12 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
                     tempPath.unlink(missing_ok=True)
                     raise
         except InvalidTag as exc:
-                    raise typer.BadParameter("Incorrect password or corrupted ShareMe data") from exc
+            raise typer.BadParameter("Incorrect password or corrupted ShareMe data") from exc
+        except ValueError, ShareMeError as exc:
+            tempPath = locals().get("tempPath")
+            if tempPath is not None:
+                tempPath.unlink(missing_ok=True)
+                
                 
 
 
