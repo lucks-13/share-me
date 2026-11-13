@@ -35,8 +35,8 @@ def makeOpname(nameStr : str) -> str:
 def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), outPath : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
     if not inPath.is_file():
         raise typer.BadParameter("Input path must be a file.")
-    passIn = getPass("Password")
-    passChk = getPass("Confirm Password")
+    passIn = getPass("Password ")
+    passChk = getPass("Confirm Password ")
     if passIn != passChk:
         raise typer.BadParameter("Passwords do not match.")
     if outPath.exists():
@@ -62,7 +62,7 @@ def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
         target.write(textOut)
         target.write("\n")
     typer.echo(f"Encrypted : {inPath} -> {outPath}")
-
+    
 @app.command()
 def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), outPath : Path | None = typer.Option(None, "--output", "-o")) -> None:
     with inPath.open("r", encoding="ascii") as source:
@@ -82,7 +82,7 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
             raise typer.BadParameter("Truncated metadata.")
         metaBuf = rawBuf[hdr_sz:metaEnd]
         chunkBuf = rawBuf[metaEnd:]
-        passIn = getPass("Password")
+        passIn = getPass("Password :")
         keyBuf = kdfKey(passIn, hdr.saltBuf)
         nameBuf = openMeta(keyBuf, hdr.metaNonce, metaBuf)
         nameStr = readFileName(nameBuf)
@@ -108,6 +108,6 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
                     tempPath.unlink(missing_ok=True)
                     raise typer.BadParameter(str(exc)) from exc
             typer.echo(f"Decrypted : {inPath} -> {outPath}")
-            
+
 if __name__ == "__main__":
     app()
