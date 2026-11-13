@@ -8,7 +8,15 @@ app = typer.Typer(
 
 @app.command()
 def encrypt() -> None:
-    typer.echo("Encrypt command testing")
+    password = typer.prompt("Password", hide_input=True)
+    confirm = typer.prompt("Confirm password", hide_input=True)
+    if password != confirm:
+        typer.echo("Error : Passwords do not match.", err=True)
+        raise typer.Exit(1)
+    salt = new_salt()
+    key = derive_key(password, salt)
+    typer.echo("Encryption key derived successfully.")
+    typer.
 
 @app.command()
 def decrypt() -> None:
