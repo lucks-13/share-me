@@ -27,10 +27,13 @@ def encrypt(file : str, output : str = typer.Option(None, "-o")) -> None:
         temp.write(header)
         encrypt_stream(source, temp, key, nonce_p)
         temp.seek(0)
-        text = en
-    typer.echo("Encryption key derived successfully.")
-    typer.echo(f"Key size : {len(key)*8} bits.")
-
+        text = encode(temp.read())
+    output = output or f"{file}.shareme"
+    with open(output, "w", encoding="ascii", newline="") as target:
+        target.write("ShareMe : ")
+        target.write(text)
+    typer.echo(f"Output : {output}")
+    
 @app.command()
 def decrypt() -> None:
     typer.echo("Decrypt command testing")
