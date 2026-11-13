@@ -16,4 +16,14 @@ def encrypt_stream(source : BinaryIO, target : BinaryIO, key : bytes, nonce_pref
 
 def decrypt_stream(source : BinaryIO, target : BinaryIO, key : bytes, nonce_prefix : bytes) -> None:
     while True:
-        raw_size = 
+        raw_size = source.read(4)
+        if not raw_size:
+            break
+        if len(raw_size) != 4:
+            raise ValueError("Truncated chunk header.")
+        size = int.from_bytes(raw_size, "big")
+        encrypted = source.read(size)
+        if len(encrypted) != size:
+            raise ValueError("Truncated chunk header")
+        nonce = chunk_nonce(nonce_prefix, index)
+        aad 
