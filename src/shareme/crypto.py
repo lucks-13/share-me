@@ -23,7 +23,7 @@ def mkNonce(noncePfx : bytes, index : int) -> bytes:
     if len(noncePfx) != 8:
         raise ValueError("Nonce prefix must be 8 bytes.")
     if index < 0 or index >= 2**32:
-        raise 
+        raise ValueError("INvalid chunk index.")
     return noncePfx + struct.pack(">I", index)
     
 def genMetaNonce() -> bytes:
