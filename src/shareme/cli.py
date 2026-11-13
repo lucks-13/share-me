@@ -6,6 +6,7 @@ import binascii
 from pathlib import Path
 from .crypto import genMetaNonce, genNoncePfx, genSalt, kdfKey, openMeta, sealMeta
 from .encoding import encode, decode
+from .errors import ShareMeError
 from .format import hdr_sz, Hdr, packHdr, readHdr
 from .stream import openStream, sealStream
 
@@ -20,7 +21,12 @@ def getPass(prompt : str) -> str:
 def readFileName(metaBuf : bytes) -> str:
     try:
         nameStr = metaBuf.decode("utf-8")
-    except UnicodeDecodeError as exc
+    except UnicodeDecodeError as exc:
+        raise ShareMeError("Invalid encrypted filename.") from exc
+    return nameStr
+
+def makeOpname(nameStr : str) -> str:
+    c
 
 @app.command()
 def encrypt(file : str, output : str = typer.Option(None, "-o")) -> None:
