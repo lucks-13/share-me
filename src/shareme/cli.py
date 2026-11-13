@@ -45,7 +45,13 @@ def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
     noncePfx = genNoncePfx()
     metaNonce = genMetaNonce()
     nameBuf = inPath.name.encode("utf-8")
-    metaBuf = sealMeta(keyBuf, m)
+    metaBuf = sealMeta(keyBuf, metaNonce, nameBuf)
+    hdr = Hdr(saltBuf=saltBuf, noncePfx=noncePfx, fileSz=fileSz, metaNonce=metaNonce, metaSz=len(metaBuf))
+    if outPath.exists():
+        raise typer.BadParameter(f"Output file already exists : {outPath}")
+    with tempfile.TemporaryFile() as rawOut:
+        rawOut.write(packHdr(hdr))
+        rawOut.write(metaBuf)
 
 @app.command()
 def decrypt() -> None:
