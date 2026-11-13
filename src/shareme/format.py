@@ -4,13 +4,13 @@ from .crypto import saltLen
 
 magic = b"share-me"
 v = 1
-hdr_fmt = ">8sBB16s8sQ"
+hdr_fmt = ">8sBB16s8sQQ12s"
 hdr_sz = struct.calcsize(hdr_fmt)
 
-@dataclass
+@dataclass(frozen=)
 class Hdr:
     saltBuf : bytes
-    nonceBuf : bytes
+    noncePfx : bytes
     fileSz : int
 
 def packHdr(hdr : Hdr) -> bytes:
@@ -21,7 +21,7 @@ def packHdr(hdr : Hdr) -> bytes:
     if hdr.fileSz < 0:
         raise ValueError("invalid file size.")
     return struct.pack(hdr_fmt, magic, v, 0, hdr.saltBuf, hdr.noncePfx, hdr.fileSz)
-    
+ 
 def readHdr(dataBuf : bytes) -> Hdr:
     if len(dataBuf) != hdr_sz:
         raise ValueError("Invalid ShareMe header size.")
