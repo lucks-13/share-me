@@ -52,6 +52,14 @@ def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
     with tempfile.TemporaryFile() as rawOut:
         rawOut.write(packHdr(hdr))
         rawOut.write(metaBuf)
+        with inPath.open("rb") as source:
+            sealStream(source, rawOut, keyBuf, noncePfx)
+        rawOut.seek(0)
+        rawBuf = rawOut.read()
+    textOut = encode(rawBuf)
+    with outPath.open("w", encoding="ascii", newline="\n") as target:
+        target.write()
+
 
 @app.command()
 def decrypt() -> None:
