@@ -21,7 +21,14 @@ def readFileName(metaBuf : bytes) -> str:
         nameStr = metaBuf.decode("utf-8")
     except UnicodeDecodeError as exc:
         raise ShareMeError("Invalid encrypted filename.") from exc
+    if not nameStr:
+        raise ShareMeError("Empty encrypted filename.") from exc
     return nameStr
+
+def safeNme(nameStr : str) -> str:
+    namePath = Path(nameStr)
+    CleanName = namePath.name
+    
 
 def makeOpname(nameStr : str) -> str:
     c_name = Path(nameStr).name
