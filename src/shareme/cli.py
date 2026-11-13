@@ -78,7 +78,14 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
             raise typer.BadParameter("ShareMe file is too short.")
         hdr = readHdr(rawBuf[:hdr_sz])
         metaEnd = hdr_sz + hdr.metaSz
-        if len(rawBuf) < 
+        if len(rawBuf) < metaEnd:
+            raise typer.BadParameter("Truncated metadata.")
+        metaBuf = rawBuf[hdr_sz:metaEnd]
+        chunkBuf = rawBuf[metaEnd:]
+        passIn = getPass("Password")
+        keyBuf = kdfKey(passIn, hdr.saltBuf)
+        try:
+            name
 
 
 
