@@ -93,7 +93,17 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
                 raise typer.BadParameter(f"Output file already exists : {outPath}")
             outPath.parent.mkdir(parents=True, exist_ok=True)
             with tempfile.NamedTemporaryFile(mode="wb", dir=outPath.parent, prefix=f"{outPath.name}.", suffix=".tmp", delete=False) as tempFile:
-                tempfile
+                tempPath = Path(tempFile.name)
+                try:
+                    tempSrc = tempfile.TemporaryFile()
+                    try:
+                        tempSrc.write(chunkBuf)
+                        tempSrc.seek(0)
+                        openStream(tempSrc, tempFile, keyBuf, hdr.noncePfx, hdr.fileSz)
+                    finally:
+                        tempSrc.close()
+                except Exception:
+                    temp
 
 
 
