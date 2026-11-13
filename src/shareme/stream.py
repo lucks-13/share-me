@@ -10,19 +10,18 @@ def sealStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : 
         nonceBuf = mkNonce(noncePfx, index)
         aadBuf = index.to_bytes(8, "big")
         cipherBuf = sealChunk(keyBuf, nonceBuf, dataBuf, aadBuf)
-    target.write(len(cipherBuf).to_bytes(4))
-    target.write(cipherBuf)
+        target.write(len(cipherBuf).to_bytes(4, "big"))
+        target.write(cipherBuf)
+        index +=1
+    return index
 
 
-def decrypt_stream(source : BinaryIO, target : BinaryIO, key : bytes, nonce_prefix : bytes) -> None:
+def openStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : bytes) -> int:
     index = 0
-    while raw_size := source.read(4):
-        size = int.from_bytes(raw_size, "big")
-        encrypted = source.read(size)
-        if len(encrypted) != size:
-            raise ValueError("Truncated chunk header")
-        nonce = chunk_nonce(nonce_prefix, index)
-        aad = index.to_bytes(8, "big")
-        decrypted = decrypt_chunk(key, nonce, encrypted, aad)
-        target.write(decrypted)
-        index += 1
+    while True:
+        sizeBuf = source.read(4)
+        if not sizeBuf:
+            break
+        if len(sizeBuf) != 4:
+            raise ValueError("T")
+    
