@@ -4,10 +4,10 @@ import struct
 from argon2.low_level import Type, hash_secret_raw
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-salt_s = 16
-key_s = 32
-nonce_s = 12
-tag_s = 16
+saltLen = 16
+keyLen = 32
+nonceLen = 12
+tag = 16
 chunk_s = 1024 * 1024
 
 def new_salt() -> bytes:
