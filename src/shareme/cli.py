@@ -58,12 +58,14 @@ def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
         rawBuf = rawOut.read()
     textOut = encode(rawBuf)
     with outPath.open("w", encoding="ascii", newline="\n") as target:
-        target.write()
-
+        target.write("ShareMe : ")
+        target.write(textOut)
+        target.write("\n")
+    typer.echo(f"Encrypted : {inPath} -> {outPath}")
 
 @app.command()
 def decrypt() -> None:
-    typer.echo("Decrypt command testing")
+    
 
 if __name__ == "__main__":
     app()
