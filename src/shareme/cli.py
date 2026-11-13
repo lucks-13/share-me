@@ -39,7 +39,13 @@ def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
     passChk = getPass("Confirm Password")
     if passIn != passChk:
         raise typer.BadParameter("Passwords do not match.")
-    fileSz = inPath.stat().st
+    fileSz = inPath.stat().st_size
+    saltBuf = genSalt()
+    keyBuf = kdfKey(passIn, saltBuf)
+    noncePfx = genNoncePfx()
+    metaNonce = genMetaNonce()
+    nameBuf = inPath.name.encode("utf-8")
+    metaBuf = sealMeta(keyBuf, m)
 
 @app.command()
 def decrypt() -> None:
