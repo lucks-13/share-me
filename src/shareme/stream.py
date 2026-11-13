@@ -33,5 +33,7 @@ def openStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : 
         nonceBuf = mkNonce(noncePfx, index)
         aadBuf = index.to_bytes(8, "big")
         dataBuf = openChunk(keyBuf, nonceBuf, cipherBuf, aadBuf)
-        target
+        target.write(dataBuf)
+        index+=1
+    return index
     
