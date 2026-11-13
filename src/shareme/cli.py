@@ -73,7 +73,13 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
         try:
             rawBuf = decode(payload)
         except ShareMeError as exc:
-            typer.BadParameter(str(exc)) from exc
+            raise typer.BadParameter(str(exc)) from exc
+        if len(rawBuf) < hdr_sz:
+            raise typer.BadParameter("ShareMe file is too short.")
+        hdr = readHdr(rawBuf[:hdr_sz])
+        metaEnd = hdr_sz + hdr.metaSz
+        if len(rawBuf) < 
+
 
 
 
