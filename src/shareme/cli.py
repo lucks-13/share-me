@@ -25,11 +25,6 @@ def readFileName(metaBuf : bytes) -> str:
         raise ShareMeError("Empty encrypted filename.") from exc
     return nameStr
 
-def safeNme(nameStr : str) -> str:
-    namePath = Path(nameStr)
-    CleanName = namePath.name
-    
-
 def makeOpname(nameStr : str) -> str:
     c_name = Path(nameStr).name
     if c_name in {"",".",".."}:
@@ -44,6 +39,8 @@ def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
     passChk = getPass("Confirm Password")
     if passIn != passChk:
         raise typer.BadParameter("Passwords do not match.")
+    if outPath.exists():
+        raise typer.BadParameter(f"Output file already exists : {outPath}")
     fileSz = inPath.stat().st_size
     saltBuf = genSalt()
     keyBuf = kdfKey(passIn, saltBuf)
@@ -52,8 +49,6 @@ def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
     nameBuf = inPath.name.encode("utf-8")
     metaBuf = sealMeta(keyBuf, metaNonce, nameBuf)
     hdr = Hdr(saltBuf=saltBuf, noncePfx=noncePfx, fileSz=fileSz, metaNonce=metaNonce, metaSz=len(metaBuf))
-    if outPath.exists():
-        raise typer.BadParameter(f"Output file already exists : {outPath}")
     with tempfile.TemporaryFile() as rawOut:
         rawOut.write(packHdr(hdr))
         rawOut.write(metaBuf)
