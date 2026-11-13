@@ -32,7 +32,9 @@ def makeOpname(nameStr : str) -> str:
     return c_name
 
 @app.command()
-def encrypt(inputPath : Path = typer.Argument(...))
+def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), outPath : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
+    if not inPath.is_file():
+        raise typer.BadParameter("Input ")
 
 @app.command()
 def decrypt() -> None:
