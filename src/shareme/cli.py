@@ -67,7 +67,14 @@ def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
 def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), outPath : Path | None = typer.Option(None, "--output", "-o")) -> None:
     with inPath.open("r", encoding="ascii") as source:
         textBuf = source.read().strip()
-        if not 
+        if not textBuf.startswith("ShareMe : "):
+            raise typer.BadParameter("Invalid ShareMe file.")
+        payload = textBuf[len("ShareMe : "):]
+        try:
+            rawBuf = decode(payload)
+        except ShareMeError as exc:
+            typer.BadParameter(str(exc)) from exc
+
 
 
 
