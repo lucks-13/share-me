@@ -1,6 +1,6 @@
 import struct
 from dataclasses import dataclass
-from .crypto import saltLen
+from .crypto import saltLen, nonceLen
 
 magic = b"share-me"
 v = 1
@@ -26,17 +26,19 @@ def packHdr(hdr : Hdr) -> bytes:
         raise ValueError("Invalid file size.")
     if hdr.metaSz < 1:
         raise ValueError("Invalid metadata size.")
-    return struct.pack(hdr_fmt, magic, v, 0, hdr.saltBuf, hdr.noncePfx, hdr.fileSz, hdr.metaSz, hdr.metaNonce)
+    return struct.pack(hdr_fmt, magic, v, 0, hdr.saltBuf, hdr.noncePfx, hdr.fileSz, hdr.metaNonce, hdr.metaSz)
 
 def readHdr(dataBuf : bytes) -> Hdr:
     if len(dataBuf) != hdr_sz:
         raise ValueError("Invalid ShareMe header size.")
-    magicBuf, ver, flags, saltBuf, noncePfx, fileSz, metaSz, metaNonce = struct.unpack(hdr_fmt, dataBuf)
+    magicBuf, ver, flags, saltBuf, noncePfx, fileSz, metaNonce, metaSz = struct.unpack(hdr_fmt, dataBuf)
     if magicBuf != magic:
         raise ValueError("Invalid ShareMe magic.")
     if ver != v:
         raise ValueError("Unsupported ShareMe Version.")
-    if flags != 0:
+    if len(metaNonce) != nonceLen:
+        raise ValueError("Invalid metadata nonce size.")
+    if flags < 0:
         raise ValueError("Unsupported ShareMe flags.")
     if metaSz < 1:
         raise ValueError("Invalid metadata size.")
