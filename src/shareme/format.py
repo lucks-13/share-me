@@ -40,4 +40,4 @@ def readHdr(dataBuf : bytes) -> Hdr:
         raise ValueError("Unsupported ShareMe flags.")
     if metaSz < 1:
         raise ValueError("Invalid metadata size.")
-    return Hdr(saltBuf=saltBuf, noncePfx=noncePfx, fileSz=fileSz)
+    return Hdr(saltBuf=saltBuf, noncePfx=noncePfx, fileSz=fileSz, metaNonce=metaNonce, metaSz=metaSz)

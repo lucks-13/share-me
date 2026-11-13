@@ -25,8 +25,14 @@ def mkNonce(noncePfx : bytes, index : int) -> bytes:
     if index < 0 or index >= 2**32:
         raise noncePfx + struct.pack(">I", index)
 
+def genMetaNonce() -> bytes:
+     return os.urandom(nonceLen)
+
 def sealChunk(keyBuf : bytes, nonceBuf : bytes, dataBuf : bytes, aadBuf : bytes = b"") -> bytes:
     return AESGCM(keyBuf).encrypt(nonceBuf, dataBuf, aadBuf)
 
 def openChunk(keyBuf : bytes, nonceBuf : bytes, cipherBuf : bytes, aadBuf : bytes = b"") ->bytes:
         return AESGCM(keyBuf).decrypt(nonceBuf, cipherBuf, aadBuf)
+
+def sealMeta(keyBuf : bytes, nonceBuf : bytes, nameBuf : bytes) -> bytes:
+     return AESGCM
