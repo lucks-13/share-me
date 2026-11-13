@@ -23,5 +23,15 @@ def openStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : 
         if not sizeBuf:
             break
         if len(sizeBuf) != 4:
-            raise ValueError("T")
+            raise ValueError("Truncated chunk header.")
+        cipherSz = int.from_bytes(sizeBuf, "big")
+        if cipherSz < 1:
+            raise ValueError("Invalid encrypted chunk size.")
+        cipherBuf = source.read(cipherSz)
+        if len(cipherBuf) != cipherSz:
+            raise ValueError("Truncated encrypted chunk.")
+        nonceBuf = mkNonce(noncePfx, index)
+        aadBuf = index.to_bytes(8, "big")
+        dataBuf = openChunk(keyBuf, nonceBuf, cipherBuf, aadBuf)
+        target
     
