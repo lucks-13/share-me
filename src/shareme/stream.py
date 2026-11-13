@@ -3,10 +3,7 @@ from .crypto import (chunk_nonce, decrypt_chunk, encrypt_chunk, chunk_s)
 
 def encrypt_stream(source : BinaryIO, target : BinaryIO, key : bytes, nonce_prefix : bytes) -> None:
     index = 0
-    while True:
-        chunk = source.read(chunk_s)
-        if not chunk:
-            break
+    while chunk:= source.read(chunk_s):
         nonce = chunk_nonce(nonce_prefix, index)
         aad = index.to_bytes(8, "big")
         encrypted = encrypt_chunk(key, nonce, chunk, aad)
@@ -16,12 +13,7 @@ def encrypt_stream(source : BinaryIO, target : BinaryIO, key : bytes, nonce_pref
 
 def decrypt_stream(source : BinaryIO, target : BinaryIO, key : bytes, nonce_prefix : bytes) -> None:
     index = 0
-    while True:
-        raw_size = source.read(4)
-        if not raw_size:
-            break
-        if len(raw_size) != 4:
-            raise ValueError("Truncated chunk header.")
+    while raw_size := source.read(4):
         size = int.from_bytes(raw_size, "big")
         encrypted = source.read(size)
         if len(encrypted) != size:
@@ -29,6 +21,5 @@ def decrypt_stream(source : BinaryIO, target : BinaryIO, key : bytes, nonce_pref
         nonce = chunk_nonce(nonce_prefix, index)
         aad = index.to_bytes(8, "big")
         decrypted = decrypt_chunk(key, nonce, encrypted, aad)
-        target.write(decrypted)
         target.write(decrypted)
         index += 1

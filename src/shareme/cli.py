@@ -1,3 +1,5 @@
+import os
+import tempfile
 import typer
 from .crypto import derive_key, new_salt
 
