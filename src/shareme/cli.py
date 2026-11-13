@@ -90,7 +90,10 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
             if outPath is None:
                 outPath = Path(makeOpname(nameStr))
             if outPath.exists():
-                
+                raise typer.BadParameter(f"Output file already exists : {outPath}")
+            outPath.parent.mkdir(parents=True, exist_ok=True)
+            with tempfile.NamedTemporaryFile(mode="wb", dir=outPath.parent, prefix=f"{outPath.name}.", suffix=".tmp", delete=False) as tempFile:
+                tempfile
 
 
 
