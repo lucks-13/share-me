@@ -111,11 +111,9 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
             tempPath = locals().get("tempPath")
             if tempPath is not None:
                 tempPath.unlink(missing_ok=True)
-                
-                
-
-
-                
-
+            raise typer.BadParameter(str(exc)) from exc
+    tempPath.replace(outPath)
+    typer.echo(f"Decrypted : {inPath} -> {outPath}")
+        
 if __name__ == "__main__":
     app()
