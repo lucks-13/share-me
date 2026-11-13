@@ -33,7 +33,7 @@ def encrypt(file : str, output : str = typer.Option(None, "-o")) -> None:
         target.write("ShareMe : ")
         target.write(text)
     typer.echo(f"Output : {output}")
-    
+
 @app.command()
 def decrypt() -> None:
     typer.echo("Decrypt command testing")

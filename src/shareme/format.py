@@ -28,4 +28,8 @@ def readHdr(dataBuf : bytes) -> Hdr:
     magicBuf, ver, flags, saltBuf, noncePfx, fileSz = struct.unpack(hdr_fmt, dataBuf)
     if magicBuf != magic:
         raise ValueError("Invalid ShareMe magic.")
-    if ver != 
+    if ver != v:
+        raise ValueError("Unsupported ShareMe Version.")
+    if flags != 0:
+        raise ValueError("Unsupported ShareMe flags.")
+    return Hdr(saltBuf=saltBuf, noncePfx=noncePfx, fileSz=fileSz)
