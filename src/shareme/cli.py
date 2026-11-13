@@ -102,11 +102,13 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
                         openStream(tempSrc, tempFile, keyBuf, hdr.noncePfx, hdr.fileSz)
                     finally:
                         tempSrc.close()
-                    except Exception:
-                        tempPath.unlink(missing_ok=True)
-                        raise
-                except InvalidTag as exc:
-                    
+                except Exception:
+                    tempPath.unlink(missing_ok=True)
+                    raise
+        except InvalidTag as exc:
+                    raise typer.BadParameter("Incorrect password or corrupted ShareMe data") from exc
+                
+
 
                 
 
