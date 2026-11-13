@@ -7,25 +7,25 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 saltLen = 16
 keyLen = 32
 nonceLen = 12
-tag = 16
-chunk_s = 1024 * 1024
+tagLen = 16
+chunkSz = 1024 * 1024
 
-def new_salt() -> bytes:
-    return os.urandom(salt_s)
+def genSalt() -> bytes:
+    return os.urandom(saltLen)
 
-def derive_key(password : str, salt : bytes) -> bytes:
-    return hash_secret_raw(secret=password.encode("utf-8"), salt= salt, time_cost=3, memory_cost=64*1024, parallelism=2, hash_len=key_s, type=Type.ID)
+def kdfKey(passIn : str, saltBuf : bytes) -> bytes:
+    return hash_secret_raw(secret=passIn.encode("utf-8"), salt= saltBuf, time_cost=3, memory_cost=64*1024, parallelism=2, hash_len=keyLen, type=Type.ID)
 
-def n_nonce_prefix() -> bytes:
+def genNoncePfx() -> bytes:
     return os.urandom(8)
 
-def chunk_nonce(prefix : bytes, index : int) -> bytes:
-    if len(prefix) != 8:
+def mkNonce(noncePfx : bytes, index : int) -> bytes:
+    if len(noncePfx) != 8:
         raise ValueError("Nonce prefix must be 8 bytes.")
     if index < 0 or index >= 2**32:
-        raise prefix + struct.pack(">I", index)
+        raise noncePfx + struct.pack(">I", index)
 
-def encrypt_chunk(key : bytes, nonce : bytes, data : bytes, aad : bytes = b"") -> bytes:
+def sealChunk(keyBuf : bytes, nonceBuf : bytes, cipher : bytes, aad : bytes = b"") -> bytes:
     return AESGCM(key).encrypt(nonce, data, aad)
 
 def decrypt_chunk(key : bytes, nonce : bytes, data : bytes, aad : bytes = b"") ->bytes:
