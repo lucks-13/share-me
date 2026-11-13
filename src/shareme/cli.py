@@ -16,7 +16,7 @@ def encrypt() -> None:
     salt = new_salt()
     key = derive_key(password, salt)
     typer.echo("Encryption key derived successfully.")
-    typer.
+    typer.echo(f"Key size : {len(key)*8} bits.")
 
 @app.command()
 def decrypt() -> None:
