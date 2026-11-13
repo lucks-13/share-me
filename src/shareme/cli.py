@@ -1,4 +1,5 @@
 import typer
+from .crypto import derive_key, new_salt
 
 app = typer.Typer(
     name = "shareme",
