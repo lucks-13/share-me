@@ -64,7 +64,10 @@ def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
     typer.echo(f"Encrypted : {inPath} -> {outPath}")
 
 @app.command()
-def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), outPath : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
+def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), outPath : Path | None = typer.Option(None, "--output", "-o")) -> None:
+    with inPath.open("r", encoding="ascii") as source:
+        textBuf = source.read().strip()
+        if not 
 
 
 
