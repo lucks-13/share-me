@@ -27,7 +27,7 @@ def packHdr(hdr : Hdr) -> bytes:
     if hdr.metaSz < 1:
         raise ValueError("Invalid metadata size.")
     return struct.pack(hdr_fmt, magic, v, 0, hdr.saltBuf, hdr.noncePfx, hdr.fileSz, hdr.metaSz, hdr.metaNonce)
- 
+
 def readHdr(dataBuf : bytes) -> Hdr:
     if len(dataBuf) != hdr_sz:
         raise ValueError("Invalid ShareMe header size.")

@@ -1,8 +1,5 @@
-import os
 import tempfile
 import typer
-import base64
-import binascii
 from cryptography.exceptions import InvalidTag
 from pathlib import Path
 from .crypto import genMetaNonce, genNoncePfx, genSalt, kdfKey, openMeta, sealMeta
