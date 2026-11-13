@@ -21,8 +21,12 @@ def new_nonce_prefix() -> bytes:
 
 def chunk_nonce(prefix : bytes, index : int) -> bytes:
     if len(prefix) != 8:
-        raise ValueError("Nonce prefix must be ")
+        raise ValueError("Nonce prefix must be 8 bytes.")
+    if index < 0 or index >= 2**32:
+        raise prefix + struct.pack(">I", index)
 
 def encrypt_chunk(key : bytes, nonce : bytes, data : bytes, aad : bytes = b"") -> bytes:
-    return AESGCM(key).decrypt(nonce, data, aad)
+    return AESGCM(key).encrypt(nonce, data, aad)
 
+def decrypt_chunk(key : bytes, nonce : bytes, data : bytes, aad : bytes = b"") ->bytes:
+        return AESGCM(key).decrypt(nonce, data, aad)
