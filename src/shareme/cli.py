@@ -26,30 +26,13 @@ def readFileName(metaBuf : bytes) -> str:
     return nameStr
 
 def makeOpname(nameStr : str) -> str:
-    c
+    c_name = Path(nameStr).name
+    if c_name in {"",".",".."}:
+        raise ShareMeError("Invalid output filename.")
+    return c_name
 
 @app.command()
-def encrypt(file : str, output : str = typer.Option(None, "-o")) -> None:
-    password = typer.prompt("Password", hide_input=True)
-    confirm = typer.prompt("Confirm password", hide_input=True)
-    if password != confirm:
-        typer.echo("Error : Passwords do not match.", err=True)
-        raise typer.Exit(1)
-    size = os.path.getsize(file)
-    salt = new_salt()
-    nonce_p = n_nonce_prefix()
-    key = derive_key(password, salt)
-    header = pack_header(Header(salt=salt, nonce_p=nonce_p, file_s=size))
-    with open(file, "rb") as source, tempfile.TemporaryFile("w+b") as temp:
-        temp.write(header)
-        encrypt_stream(source, temp, key, nonce_p)
-        temp.seek(0)
-        text = encode(temp.read())
-    output = output or f"{file}.shareme"
-    with open(output, "w", encoding="ascii", newline="") as target:
-        target.write("ShareMe : ")
-        target.write(text)
-    typer.echo(f"Output : {output}")
+def encrypt(inputPath : Path = typer.Argument(...))
 
 @app.command()
 def decrypt() -> None:
