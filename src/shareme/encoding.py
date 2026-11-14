@@ -32,5 +32,10 @@ def decodeStream(source : TextIO, target : BinaryIO, chunkSize : int = 1024*1024
         textBuf = source.read(chunkSize)
         if not textBuf:
             break
-        pending =  
+        pending += textBuf
+        useSz = len(pending) - (len(pending) % 4)
+        if useSz:
+            try:
+                target.write(base64.urlsafe_b64decode(pending[:useSz].encode("ascii")))
+            
     
