@@ -24,7 +24,7 @@ def mknonce(noncepfx : bytes, index : int) -> bytes:
     if index < 0 or index >= 2**32:
         raise ValueError("Invalid chunk index.")
     return noncepfx + struct.pack(">I", index)
-    
+ 
 def genmetanonce() -> bytes:
      return os.urandom(noncelen)
 
