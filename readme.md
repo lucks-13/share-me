@@ -18,4 +18,17 @@ right now it supports {i tried}:
 * image file
 * video file
 
-it also handles 
+it also handles large files based on your own system.
+
+
+# why i made this project.
+i wanted to test my understand and ability on cryptography, luckly i have been learning this topics and concepts for the past 1 month so i am very happy i was able to code without any ai to generate code for me.
+
+# how to run this project.
+
+```
+git clone https://github.com/lucks-13/share-me.git
+```
+```
+
+```
