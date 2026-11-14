@@ -75,50 +75,43 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             rawin.seek(0)
             headerbuf = rawin.read(hdr_sz)
             if len(headerbuf) < hdr_sz:
-                raise typer.BadParameter
-
-
-
-
-
-
-
-
-
-        if len(rawbuf) < hdr_sz:
-            raise typer.BadParameter("ShareMe file is too short.")
-        hdr = readhdr(rawbuf[:hdr_sz])
-        metaend = hdr_sz + hdr.metaSz
-        if len(rawbuf) < metaend:
-            raise typer.BadParameter("Truncated metadata.")
-        metabuf = rawbuf[hdr_sz:metaend]
-        chunkbuf = rawbuf[metaend:]
-        passin = getpass("Password ")
-        keybuf = kdfkey(passin, hdr.saltbuf)
-        namebuf = openmeta(keyBuf, hdr.metanonce, metabuf)
-        namestr = readfilename(namebuf)
-        if outpath is None:
-            outpath = Path(makeOpname(namestr))
-        if outpath.exists():
-            raise typer.BadParameter(f"Output file already exists : {outpath}")
-        outpath.parent.mkdir(parents=True, exist_ok=True)
-        with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfile:
-            temppath = Path(tempfile.name)
+                raise typer.BadParameter("ShareMe file is too short.")
             try:
-                with tempfile.TemporaryFile() as tempSrc:
-                    tempSrc.write(chunkBuf)
-                    tempSrc.seek(0)
-                    openStream(tempSrc, tempFile, keyBuf, hdr.noncePfx, hdr.fileSz)
-                    tempPath.replace(outPath)
-            except InvalidTag as exc:
-                if tempPath is not None:
-                    tempPath.unlink(missing_ok=True)
-                raise typer.BadParameter("Incorrect password or corrupted ShareMe data") from exc
-            except (ValueError, ShareMeError) as exc:
-                if tempPath is not None:
-                    tempPath.unlink(missing_ok=True)
-                    raise typer.BadParameter(str(exc)) from exc
-            typer.echo(f"Decrypted : {inPath} -> {outPath}")
+                hdr = readhdr(headerbuf)
+            except ValueError as exc:
+                typer.BadParameter(str(exc)) from exc
+            metabuf = rawin.read(hdr.metasz)
+        
+        # if len(rawbuf) < metaend:
+        #     raise typer.BadParameter("Truncated metadata.")
+        # metabuf = rawbuf[hdr_sz:metaend]
+        # chunkbuf = rawbuf[metaend:]
+        # passin = getpass("Password ")
+        # keybuf = kdfkey(passin, hdr.saltbuf)
+        # namebuf = openmeta(keyBuf, hdr.metanonce, metabuf)
+        # namestr = readfilename(namebuf)
+        # if outpath is None:
+        #     outpath = Path(makeOpname(namestr))
+        # if outpath.exists():
+        #     raise typer.BadParameter(f"Output file already exists : {outpath}")
+        # outpath.parent.mkdir(parents=True, exist_ok=True)
+        # with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfile:
+        #     temppath = Path(tempfile.name)
+        #     try:
+        #         with tempfile.TemporaryFile() as tempSrc:
+        #             tempSrc.write(chunkBuf)
+        #             tempSrc.seek(0)
+        #             openStream(tempSrc, tempFile, keyBuf, hdr.noncePfx, hdr.fileSz)
+        #             tempPath.replace(outPath)
+        #     except InvalidTag as exc:
+        #         if tempPath is not None:
+        #             tempPath.unlink(missing_ok=True)
+        #         raise typer.BadParameter("Incorrect password or corrupted ShareMe data") from exc
+        #     except (ValueError, ShareMeError) as exc:
+        #         if tempPath is not None:
+        #             tempPath.unlink(missing_ok=True)
+        #             raise typer.BadParameter(str(exc)) from exc
+        #     typer.echo(f"Decrypted : {inPath} -> {outPath}")
 
 if __name__ == "__main__":
     app()
