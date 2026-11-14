@@ -12,38 +12,38 @@ class Hdr:
     salt_buf : bytes
     nonce_pfx : bytes
     file_sz : int
-    metanonce : bytes
-    metasz : int
+    meta_nonce : bytes
+    meta_sz : int
 
 def packhdr(hdr : Hdr) -> bytes:
     if len(hdr.salt_buf) != salt_len:
         raise ValueError("Invalid salt size.")
     if len(hdr.nonce_pfx) != 8:
         raise ValueError("Invalid nonce prefix size.")
-    if len(hdr.metanonce) != nonce_len:
+    if len(hdr.meta_nonce) != nonce_len:
         raise ValueError("Invalid metadata nonce size.")
     if hdr.file_sz < 0:
         raise ValueError("Invalid file size.")
-    if hdr.metasz < 1:
+    if hdr.meta_sz < 1:
         raise ValueError("Invalid metadata size.")
-    return struct.pack(hdr_fmt, magic, v, 0, hdr.salt_buf, hdr.nonce_pfx, hdr.file_sz, hdr.metasz, hdr.metanonce)
+    return struct.pack(hdr_fmt, magic, v, 0, hdr.salt_buf, hdr.nonce_pfx, hdr.file_sz, hdr.meta_sz, hdr.meta_nonce)
 
-def readhdr(databuf : bytes) -> Hdr:
-    if len(databuf) != hdr_sz:
+def readhdr(data_buf : bytes) -> Hdr:
+    if len(data_buf) != hdr_sz:
         raise ValueError("Invalid ShareMe header size.")
-    magicbuf, ver, flags, salt_buf, nonce_pfx, file_sz, metasz, metanonce = struct.unpack(hdr_fmt, databuf)
-    if magicbuf != magic:
+    magic_buf, ver, flags, salt_buf, nonce_pfx, file_sz, meta_sz, meta_nonce = struct.unpack(hdr_fmt, data_buf)
+    if magic_buf != magic:
         raise ValueError("Invalid ShareMe magic.")
     if ver != v:
         raise ValueError("Unsupported ShareMe Version.")
     if len(salt_buf) != salt_len:
         raise ValueError("Invalid salt size.")
-    if len(metanonce) != nonce_len:
+    if len(meta_nonce) != nonce_len:
         raise ValueError("Invalid metadata nonce size.")
     if len(nonce_pfx) != 8:
         raise ValueError("Invalid nonce prefix size.")
     if flags != 0:
         raise ValueError("Unsupported ShareMe flags.")
-    if metasz < 1:
+    if meta_sz < 1:
         raise ValueError("Invalid metadata size.")
-    return Hdr(salt_buf=salt_buf, nonce_pfx=nonce_pfx, file_sz=file_sz, metanonce=metanonce, metasz=metasz)
+    return Hdr(salt_buf=salt_buf, nonce_pfx=nonce_pfx, file_sz=file_sz, meta_nonce=meta_nonce, meta_sz=meta_sz)

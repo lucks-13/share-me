@@ -15,14 +15,14 @@ def decode(text : str) -> bytes:
 def encodestream(source : BinaryIO, target : TextIO, chuncksize : int = 1024*1024) -> None:
     pending = b""
     while True:
-        databuf = source.read(chuncksize)
-        if not databuf:
+        data_buf = source.read(chuncksize)
+        if not data_buf:
             break
-        databuf = pending + databuf
-        usesz = len(databuf) - (len(databuf)%3)
+        data_buf = pending + data_buf
+        usesz = len(data_buf) - (len(data_buf)%3)
         if usesz:
-            target.write(base64.urlsafe_b64encode(databuf[:usesz]).decode("ascii"))
-            pending = databuf[usesz:]
+            target.write(base64.urlsafe_b64encode(data_buf[:usesz]).decode("ascii"))
+            pending = data_buf[usesz:]
     if pending:
         target.write(base64.urlsafe_b64encode(pending).decode("ascii"))
 

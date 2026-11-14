@@ -27,14 +27,14 @@ def mk_nonce(nonce_pfx : bytes, index : int) -> bytes:
 def gen_meta_nonce() -> bytes:
      return os.urandom(nonce_len)
 
-def seal_chunk(key_buf : bytes, nonce_buf : bytes, databuf : bytes, aadbuf : bytes = b"") -> bytes:
-    return AESGCM(key_buf).encrypt(nonce_buf, databuf, aadbuf)
+def seal_chunk(key_buf : bytes, nonce_buf : bytes, data_buf : bytes, aad_buf : bytes = b"") -> bytes:
+    return AESGCM(key_buf).encrypt(nonce_buf, data_buf, aad_buf)
 
-def open_chunk(key_buf : bytes, nonce_buf : bytes, cipherbuf : bytes, aadbuf : bytes = b"") ->bytes:
-        return AESGCM(key_buf).decrypt(nonce_buf, cipherbuf, aadbuf)
+def open_chunk(key_buf : bytes, nonce_buf : bytes, cipher_buf : bytes, aad_buf : bytes = b"") ->bytes:
+        return AESGCM(key_buf).decrypt(nonce_buf, cipher_buf, aad_buf)
 
-def sealmeta(key_buf : bytes, nonce_buf : bytes, namebuf : bytes) -> bytes:
+def seal_meta(key_buf : bytes, nonce_buf : bytes, namebuf : bytes) -> bytes:
      return AESGCM(key_buf).encrypt(nonce_buf, namebuf, b'shareme-meta')
 
-def openmeta(key_buf : bytes, nonce_buf : bytes, cipherbuf : bytes) -> bytes:
-     return AESGCM(key_buf).decrypt(nonce_buf, cipherbuf, b'shareme-meta')
+def open_meta(key_buf : bytes, nonce_buf : bytes, cipher_buf : bytes) -> bytes:
+     return AESGCM(key_buf).decrypt(nonce_buf, cipher_buf, b'shareme-meta')
