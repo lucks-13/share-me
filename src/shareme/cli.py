@@ -25,11 +25,14 @@ def read_file_name(meta_buf : bytes) -> str:
         raise sharemeerror("Empty encrypted filename.") from exc
     return name_str
 
-def makeopname(name_str : str) -> str:
-    c_name = Path(name_str).name
-    if c_name in {"",".",".."}:
+def mk_encrypt_path(out_path : Path) -> Path:
+    if out_path.name in {"", ".", ".."}:
         raise sharemeerror("Invalid output filename.")
-    return c_name
+    if out_path.suffix == ".shareme":
+        return out_path
+    return out_path.with_name(out_path.name + ".shareme")
+
+def mk_restore_path(out_path : Path, name_str : )
 
 @app.command()
 def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
