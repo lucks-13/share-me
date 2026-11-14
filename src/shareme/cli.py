@@ -81,14 +81,17 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             except ValueError as exc:
                 typer.BadParameter(str(exc)) from exc
             metabuf = rawin.read(hdr.metasz)
-        
-        # if len(rawbuf) < metaend:
-        #     raise typer.BadParameter("Truncated metadata.")
-        # metabuf = rawbuf[hdr_sz:metaend]
+            if len(metabuf) < hdr.metasz:
+                raise typer.BadParameter("Truncated metadata.")
+            passin = getpass("Password ")
+            try:
+                keybuf = kdfkey(passin, hdr.saltbuf)
+                namebuf = openmeta(keybuf, hdr.metanonce, metabuf)        
+
+            
         # chunkbuf = rawbuf[metaend:]
-        # passin = getpass("Password ")
-        # keybuf = kdfkey(passin, hdr.saltbuf)
-        # namebuf = openmeta(keyBuf, hdr.metanonce, metabuf)
+        # 
+        # 
         # namestr = readfilename(namebuf)
         # if outpath is None:
         #     outpath = Path(makeOpname(namestr))
