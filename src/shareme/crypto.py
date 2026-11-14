@@ -9,7 +9,7 @@ noncelen = 12
 taglen = 16
 chunksz = 1024 * 1024
 
-def gensalt() -> bytes:
+def gen_salt() -> bytes:
     return os.urandom(saltlen)
 
 def kdfkey(passin : str, saltbuf : bytes) -> bytes:

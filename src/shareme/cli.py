@@ -2,7 +2,7 @@ import tempfile
 import typer
 from cryptography.exceptions import InvalidTag
 from pathlib import Path
-from .crypto import genmetanonce, gennoncepfx, gensalt, kdfkey, openmeta, sealmeta
+from .crypto import genmetanonce, gennoncepfx, gen_salt, kdfkey, openmeta, sealmeta
 from .encoding import encodestream, decodestream
 from .errors import sharemeerror
 from .format import hdr_sz, Hdr, packhdr, readhdr
@@ -42,7 +42,7 @@ def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
     if outpath.exists():
         raise typer.BadParameter(f"Output file already exists : {outpath}")
     filesz = inpath.stat().st_size
-    saltbuf = gensalt()
+    saltbuf = gen_salt()
     keybuf = kdfkey(passin, saltbuf)
     noncepfx = gennoncepfx()
     metanonce = genmetanonce()
