@@ -95,16 +95,19 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             if outpath.exists():
                 raise typer.BadParameter(f"Output file already exists : {outpath}")
             outpath.parent.mkdir(parents=True, exist_ok=True)
-            with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfiles:
-                temppath = Path(tempfiles.name)
-                try:
+            temppath = None
+            try:
+                with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfiles:
+                    temppath = Path(tempfiles.name)
                     openstream(rawin, tempfiles, keybuf, hdr.noncepfx, hdr.filesz)
                     temppath.replace(outpath)
-                except InvalidTag as exc:
+            except InvalidTag as exc:
+                if temppath is not None:
                     temppath.unlink(missing_ok=True)
                     raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
-                except (ValueError, sharemeerror) as exc:
-                    temppath.unlink(missing_ok=True)
+            except (ValueError, sharemeerror) as exc:
+                if 
+            temppath.unlink(missing_ok=True)
                     raise typer.BadParameter(str(exc)) from exc
                 typer.echo(f"Decrypted : {inpath} -> {outpath}")     
 
