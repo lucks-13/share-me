@@ -32,84 +32,84 @@ def makeopname(name_str : str) -> str:
     return c_name
 
 @app.command()
-def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), outpath : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
-    if not inpath.is_file():
+def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
+    if not in_path.is_file():
         raise typer.BadParameter("Input path must be a file.")
     pass_in = get_pass("Password ")
     passchk = get_pass("Confirm Password ")
     if pass_in != passchk:
         raise typer.BadParameter("Passwords do not match.")
-    if outpath.exists():
-        raise typer.BadParameter(f"Output file already exists : {outpath}")
-    file_sz = inpath.stat().st_size
+    if out_path.exists():
+        raise typer.BadParameter(f"Output file already exists : {out_path}")
+    file_sz = in_path.stat().st_size
     salt_buf = gen_salt()
     key_buf = kdf_key(pass_in, salt_buf)
     nonce_pfx = gen_nonce_pfx()
     meta_nonce = gen_meta_nonce()
-    namebuf = inpath.name.encode("utf-8")
-    meta_buf = seal_meta(key_buf, meta_nonce, namebuf)
+    name_buf = in_path.name.encode("utf-8")
+    meta_buf = seal_meta(key_buf, meta_nonce, name_buf)
     hdr = Hdr(salt_buf=salt_buf, nonce_pfx=nonce_pfx, file_sz=file_sz, meta_nonce=meta_nonce, meta_sz=len(meta_buf))
-    with tempfile.TemporaryFile() as rawout:
-        rawout.write(pack_hdr(hdr))
-        rawout.write(meta_buf)
-        with inpath.open("rb") as source:
-            seal_stream(source, rawout, key_buf, nonce_pfx)
-        rawout.seek(0)
-        with outpath.open("w", encoding="ascii", newline="\n") as target:
+    with tempfile.TemporaryFile() as raw_out:
+        raw_out.write(pack_hdr(hdr))
+        raw_out.write(meta_buf)
+        with in_path.open("rb") as source:
+            seal_stream(source, raw_out, key_buf, nonce_pfx)
+        raw_out.seek(0)
+        with out_path.open("w", encoding="ascii", newline="\n") as target:
             target.write("ShareMe : ")
-            encode_stream(rawout, target)
+            encode_stream(raw_out, target)
             target.write("\n")
-    typer.echo(f"Encrypted : {inpath} -> {outpath}")
+    typer.echo(f"Encrypted : {in_path} -> {out_path}")
 
 @app.command()
-def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), outpath : Path | None = typer.Option(None, "--output", "-o")) -> None:
-    with inpath.open("r", encoding="ascii") as source:
+def decrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path | None = typer.Option(None, "--output", "-o")) -> None:
+    with in_path.open("r", encoding="ascii") as source:
         prefix = source.read(len("ShareMe : "))
         if prefix != "ShareMe : ":
             typer.BadParameter("Invalid ShareMe file.")
-        with tempfile.TemporaryFile() as rawin:
+        with tempfile.TemporaryFile() as raw_in:
             try:
-                decode_stream(source, rawin)
+                decode_stream(source, raw_in)
             except sharemeerror as exc:
                 raise typer.BadParameter(str(exc)) from exc
-            rawin.seek(0)
-            headerbuf = rawin.read(hdr_sz)
-            if len(headerbuf) < hdr_sz:
+            raw_in.seek(0)
+            header_buf = raw_in.read(hdr_sz)
+            if len(header_buf) < hdr_sz:
                 raise typer.BadParameter("ShareMe file is too short.")
             try:
-                hdr = read_hdr(headerbuf)
+                hdr = read_hdr(header_buf)
             except ValueError as exc:
                 raise typer.BadParameter(str(exc)) from exc
-            meta_buf = rawin.read(hdr.meta_sz)
+            meta_buf = raw_in.read(hdr.meta_sz)
             if len(meta_buf) < hdr.meta_sz:
                 raise typer.BadParameter("Truncated metadata.")
             pass_in = get_pass("Password ")
             try:
                 key_buf = kdf_key(pass_in, hdr.salt_buf)
-                namebuf = open_meta(key_buf, hdr.meta_nonce, meta_buf)        
+                name_buf = open_meta(key_buf, hdr.meta_nonce, meta_buf)        
             except InvalidTag as exc:
                 raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
-            name_str = read_file_name(namebuf)
-            if outpath is None:
-                outpath = Path(makeopname(name_str))
-            if outpath.exists():
-                raise typer.BadParameter(f"Output file already exists : {outpath}")
-            outpath.parent.mkdir(parents=True, exist_ok=True)
-            temppath = None
+            name_str = read_file_name(name_buf)
+            if out_path is None:
+                out_path = Path(makeopname(name_str))
+            if out_path.exists():
+                raise typer.BadParameter(f"Output file already exists : {out_path}")
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            temp_path = None
             try:
-                with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfiles:
-                    temppath = Path(tempfiles.name)
-                    open_stream(rawin, tempfiles, key_buf, hdr.nonce_pfx, hdr.file_sz)
-                temppath.replace(outpath)
+                with tempfile.NamedTemporaryFile(mode="wb", dir=out_path.parent, prefix=f"{out_path.name}.", suffix=".tmp", delete=False) as temp_file:
+                    temp_path = Path(temp_file.name)
+                    open_stream(raw_in, temp_file, key_buf, hdr.nonce_pfx, hdr.file_sz)
+                temp_path.replace(out_path)
             except InvalidTag as exc:
-                if temppath is not None:
-                    temppath.unlink(missing_ok=True)
+                if temp_path is not None:
+                    temp_path.unlink(missing_ok=True)
                     raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
             except (ValueError, sharemeerror) as exc:
-                if temppath is not None:
-                    temppath.unlink(missing_ok=True)
+                if temp_path is not None:
+                    temp_path.unlink(missing_ok=True)
                     raise typer.BadParameter(str(exc)) from exc
-            typer.echo(f"Decrypted : {inpath} -> {outpath}")     
+            typer.echo(f"Decrypted : {in_path} -> {out_path}")     
 
 if __name__ == "__main__":
     app()
