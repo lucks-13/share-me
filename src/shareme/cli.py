@@ -75,23 +75,23 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             rawin.seek(0)
         if len(rawbuf) < hdr_sz:
             raise typer.BadParameter("ShareMe file is too short.")
-        hdr = readHdr(rawbuf[:hdr_sz])
-        metaEnd = hdr_sz + hdr.metaSz
-        if len(rawBuf) < metaEnd:
+        hdr = readhdr(rawbuf[:hdr_sz])
+        metaend = hdr_sz + hdr.metaSz
+        if len(rawbuf) < metaend:
             raise typer.BadParameter("Truncated metadata.")
-        metaBuf = rawBuf[hdr_sz:metaEnd]
-        chunkBuf = rawBuf[metaEnd:]
-        passIn = getPass("Password ")
-        keyBuf = kdfKey(passIn, hdr.saltBuf)
-        nameBuf = openMeta(keyBuf, hdr.metaNonce, metaBuf)
-        nameStr = readFileName(nameBuf)
-        if outPath is None:
-            outPath = Path(makeOpname(nameStr))
-        if outPath.exists():
-            raise typer.BadParameter(f"Output file already exists : {outPath}")
-        outPath.parent.mkdir(parents=True, exist_ok=True)
-        with tempfile.NamedTemporaryFile(mode="wb", dir=outPath.parent, prefix=f"{outPath.name}.", suffix=".tmp", delete=False) as tempFile:
-            tempPath = Path(tempFile.name)
+        metabuf = rawbuf[hdr_sz:metaend]
+        chunkbuf = rawbuf[metaend:]
+        passin = getpass("Password ")
+        keybuf = kdfkey(passin, hdr.saltbuf)
+        namebuf = openmeta(keyBuf, hdr.metanonce, metabuf)
+        namestr = readfilename(namebuf)
+        if outpath is None:
+            outpath = Path(makeOpname(namestr))
+        if outpath.exists():
+            raise typer.BadParameter(f"Output file already exists : {outpath}")
+        outpath.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfile:
+            temppath = Path(tempfile.name)
             try:
                 with tempfile.TemporaryFile() as tempSrc:
                     tempSrc.write(chunkBuf)
