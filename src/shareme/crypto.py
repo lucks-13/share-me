@@ -34,8 +34,8 @@ def sealchunk(keybuf : bytes, noncebuf : bytes, databuf : bytes, aadbuf : bytes 
 def openchunk(keybuf : bytes, noncebuf : bytes, cipherbuf : bytes, aadbuf : bytes = b"") ->bytes:
         return AESGCM(keybuf).decrypt(noncebuf, cipherbuf, aadbuf)
 
-def sealmeta(keyBuf : bytes, noncebuf : bytes, namebuf : bytes) -> bytes:
-     return AESGCM(keyBuf).encrypt(noncebuf, namebuf, b'shareme-meta')
+def sealmeta(keybuf : bytes, noncebuf : bytes, namebuf : bytes) -> bytes:
+     return AESGCM(keybuf).encrypt(noncebuf, namebuf, b'shareme-meta')
 
-def openmeta(keyBuf : bytes, nonceBuf : bytes, cipherBuf : bytes) -> bytes:
-     return AESGCM(keybuf).decrypt(nonceBuf, cipherBuf, b'shareme-meta')
+def openmeta(keybuf : bytes, noncebuf : bytes, cipherbuf : bytes) -> bytes:
+     return AESGCM(keybuf).decrypt(noncebuf, cipherbuf, b'shareme-meta')

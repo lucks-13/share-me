@@ -38,5 +38,4 @@ def decodestream(source : TextIO, target : BinaryIO, chunksize : int = 1024*1024
             try:
                 target.write(base64.urlsafe_b64decode(pending[:usesz].encode("ascii")))
             except (UnicodeEncodeError, binascii.Error, ValueError) as exc:
-                raise invalidsharemeerror("Invalid ShareMe encoding.") from exc 
-    
+                raise invalidsharemeerror("Invalid ShareMe encoding.") from exc
