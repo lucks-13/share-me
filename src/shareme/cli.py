@@ -9,7 +9,7 @@ from .format import hdr_sz, Hdr, pack_hdr, read_hdr
 from .stream import open_stream, seal_stream
 
 app = typer.Typer(
-    name = "shareme",
+    name = "share-me",
     help = "Secure text based file sharing cli."
 )
 
