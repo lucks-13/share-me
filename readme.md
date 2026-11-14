@@ -63,4 +63,4 @@ make sure that you remember the password
 * processinf files in chunks
 
 # Ai Disclosure
-Google chrome ai search
+i dont know Google chrome ai search comes under which catageory, i have used them and then few youtube tutorials and google searches. coz raw coding without any help {technically i did not reach that level of experience }
