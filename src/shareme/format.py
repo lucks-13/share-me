@@ -26,12 +26,12 @@ def packHdr(hdr : Hdr) -> bytes:
         raise ValueError("Invalid file size.")
     if hdr.metaSz < 1:
         raise ValueError("Invalid metadata size.")
-    return struct.pack(hdr_fmt, magic, v, 0, hdr.saltBuf, hdr.noncePfx, hdr.fileSz, hdr.metaNonce, hdr.metaSz)
+    return struct.pack(hdr_fmt, magic, v, 0, hdr.saltBuf, hdr.noncePfx, hdr.fileSz, hdr.metaSz, hdr.metaNonce)
 
 def readHdr(dataBuf : bytes) -> Hdr:
     if len(dataBuf) != hdr_sz:
         raise ValueError("Invalid ShareMe header size.")
-    magicBuf, ver, flags, saltBuf, noncePfx, fileSz, metaNonce, metaSz = struct.unpack(hdr_fmt, dataBuf)
+    magicBuf, ver, flags, saltBuf, noncePfx, fileSz, metaSz, metaNonce = struct.unpack(hdr_fmt, dataBuf)
     if magicBuf != magic:
         raise ValueError("Invalid ShareMe magic.")
     if ver != v:
@@ -40,10 +40,10 @@ def readHdr(dataBuf : bytes) -> Hdr:
         raise ValueError("Invalid salt size.")
     if len(metaNonce) != nonceLen:
         raise ValueError("Invalid metadata nonce size.")
+    if len(noncePfx) != 8:
+        raise ValueError("Invalid nonce prefix size.")
     if flags != 0:
         raise ValueError("Unsupported ShareMe flags.")
     if metaSz < 1:
         raise ValueError("Invalid metadata size.")
-    if fileSz < 1:
-        raise ValueError("Invalid File size.")
     return Hdr(saltBuf=saltBuf, noncePfx=noncePfx, fileSz=fileSz, metaNonce=metaNonce, metaSz=metaSz)
