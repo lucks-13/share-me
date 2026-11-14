@@ -36,6 +36,19 @@ def test_binary_file(tmp_path : Path) -> None:
     assert result.exit_code == 0
     assert restore.read_bytes() == data
 
+def test_video_file(tmp_path : Path) -> None:
+    source = tmp_path / "test.mp4"
+    encrypt = tmp_path / "test.shareme"
+    restore = tmp_path / "restored.mp4"
+    data = b"\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00mp42isom\x00\x00\x00\x08mdat"
+    source.write_bytes(data)
+    result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
+    assert result.exit_code == 0
+    assert encrypt.exists()
+    result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="password\n")
+    assert result.exit_code == 0
+    assert restore.read_bytes() == data
+
 def test_empty_file(tmp_path : Path) -> None:
     source = tmp_path / "test.txt"
     encrypt = tmp_path / "test.shareme"
