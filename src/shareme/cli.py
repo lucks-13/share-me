@@ -100,23 +100,13 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
                 try:
                     openstream(rawin, tempfiles, keybuf, hdr.noncepfx, hdr.filesz)
                     temppath.replace(outpath)
-
-        #     temppath = Path(tempfile.name)
-        #     try:
-        #         with tempfile.TemporaryFile() as tempSrc:
-        #             tempSrc.write(chunkBuf)
-        #             tempSrc.seek(0)
-        #             openStream(tempSrc, tempFile, keyBuf, hdr.noncePfx, hdr.fileSz)
-        #             tempPath.replace(outPath)
-        #     except InvalidTag as exc:
-        #         if tempPath is not None:
-        #             tempPath.unlink(missing_ok=True)
-        #         raise typer.BadParameter("Incorrect password or corrupted ShareMe data") from exc
-        #     except (ValueError, ShareMeError) as exc:
-        #         if tempPath is not None:
-        #             tempPath.unlink(missing_ok=True)
-        #             raise typer.BadParameter(str(exc)) from exc
-        #     typer.echo(f"Decrypted : {inPath} -> {outPath}")
+                except InvalidTag as exc:
+                    temppath.unlink(missing_ok=True)
+                    raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
+                except (ValueError, sharemeerror) as exc:
+                    temppath.unlink(missing_ok=True)
+                    raise typer.BadParameter(str(exc)) from exc
+                typer.echo(f"Decrypted : {inpath} -> {outpath}")     
 
 if __name__ == "__main__":
     app()
