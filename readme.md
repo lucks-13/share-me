@@ -30,5 +30,25 @@ i wanted to test my understand and ability on cryptography, luckly i have been l
 git clone https://github.com/lucks-13/share-me.git
 ```
 ```
+pythton -m pip install -e .
+```
+```
+share-me --help
+```
+# Available commands.
+1. Encrypt a file.
+```
+share-me encrypt test.txt -o test.shareme
+```
+ShareMe will ask for the password and password confirmation.
+
+the encrypted file will be saved on
+```
+test.shareme
+```
+
+2. Decrypt a file.
+```
+share-me decrypt test.shareme -o 
 
 ```
