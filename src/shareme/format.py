@@ -20,7 +20,7 @@ def packHdr(hdr : Hdr) -> bytes:
         raise ValueError("Invalid salt size.")
     if len(hdr.noncePfx) != 8:
         raise ValueError("Invalid nonce prefix size.")
-    if len(hdr.metaNonce) != 12:
+    if len(hdr.metaNonce) != nonceLen:
         raise ValueError("Invalid metadata nonce size.")
     if hdr.fileSz < 0:
         raise ValueError("Invalid file size.")
