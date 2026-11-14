@@ -13,12 +13,12 @@ app = typer.Typer(
     help = "Secure text based file sharing cli."
 )
 
-def getPass(prompt : str) -> str:
+def getpass(prompt : str) -> str:
     return typer.prompt(prompt, hide_input=True)
 
-def readFileName(metaBuf : bytes) -> str:
+def readfilename(metabuf : bytes) -> str:
     try:
-        nameStr = metaBuf.decode("utf-8")
+        namestr = metabuf.decode("utf-8")
     except UnicodeDecodeError as exc:
         raise ShareMeError("Invalid encrypted filename.") from exc
     if not nameStr:
