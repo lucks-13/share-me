@@ -12,10 +12,10 @@ def decode(text : str) -> bytes:
     except (UnicodeEncodeError, binascii.Error, ValueError) as exc:
         raise invalidsharemeerror("Invalid ShareMe encoding.") from exc
 
-def encode_stream(source : BinaryIO, target : TextIO, chuncksize : int = 1024*1024) -> None:
+def encode_stream(source : BinaryIO, target : TextIO, chunk_size : int = 1024*1024) -> None:
     pending = b""
     while True:
-        data_buf = source.read(chuncksize)
+        data_buf = source.read(chunk_size)
         if not data_buf:
             break
         data_buf = pending + data_buf
@@ -26,10 +26,10 @@ def encode_stream(source : BinaryIO, target : TextIO, chuncksize : int = 1024*10
     if pending:
         target.write(base64.urlsafe_b64encode(pending).decode("ascii"))
 
-def decode_stream(source : TextIO, target : BinaryIO, chunksize : int = 1024*1024) -> None:
+def decode_stream(source : TextIO, target : BinaryIO, chunk_size : int = 1024*1024) -> None:
     pending = ""
     while True:
-        text_buf = source.read(chunksize)
+        text_buf = source.read(chunk_size)
         if not text_buf:
             break
         pending += text_buf

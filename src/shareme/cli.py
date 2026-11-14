@@ -32,7 +32,14 @@ def mk_encrypt_path(out_path : Path) -> Path:
         return out_path
     return out_path.with_name(out_path.name + ".shareme")
 
-def mk_restore_path(out_path : Path, name_str : )
+def mk_restore_path(out_path : Path, name_str : str) -> Path:
+    base_name = Path(out_path).name
+    if base_name in {"", ".", ".."}:
+        raise sharemeerror("Invalid output filename.")
+    ext = Path(name_str).suffix
+    if not ext:
+        return out_path
+    return out_path.with_name(base_name + ext)
 
 @app.command()
 def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
@@ -42,6 +49,7 @@ def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), ou
     passchk = get_pass("Confirm Password ")
     if pass_in != passchk:
         raise typer.BadParameter("Passwords do not match.")
+    
     if out_path.exists():
         raise typer.BadParameter(f"Output file already exists : {out_path}")
     file_sz = in_path.stat().st_size
