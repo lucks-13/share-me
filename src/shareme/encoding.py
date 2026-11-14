@@ -15,5 +15,9 @@ def decode(text : str) -> bytes:
 def encodeStream(source : BinaryIO, target : TextIO, chunckSize : int = 1024*1024) -> None:
     pending = b""
     while True:
-        dataBuf = source
+        dataBuf = source.read(chunckSize)
+        if not dataBuf:
+            break
+        dataBuf = pending + dataBuf
+        useSz = 
     
