@@ -25,6 +25,8 @@ def read_file_name(meta_buf : bytes) -> str:
         raise sharemeerror("Empty encrypted filename.") from exc
     return name_str
 
+
+
 def mk_encrypt_path(out_path : Path) -> Path:
     if out_path.name in {"", ".", ".."}:
         raise sharemeerror("Invalid output filename.")
@@ -46,10 +48,10 @@ def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), ou
     if not in_path.is_file():
         raise typer.BadParameter("Input path must be a file.")
     pass_in = get_pass("Password ")
-    passchk = get_pass("Confirm Password ")
-    if pass_in != passchk:
+    pass_chk = get_pass("Confirm Password ")
+    if pass_in != pass_chk:
         raise typer.BadParameter("Passwords do not match.")
-    
+    out_path = mk_encrypt_path(out_path)
     if out_path.exists():
         raise typer.BadParameter(f"Output file already exists : {out_path}")
     file_sz = in_path.stat().st_size
@@ -102,7 +104,9 @@ def decrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), ou
                 raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
             name_str = read_file_name(name_buf)
             if out_path is None:
-                out_path = Path(makeopname(name_str))
+                out_path = Path(make_op_name(name_str))
+            else:
+                out_path = mk_restore_path(out_path, name_str)
             if out_path.exists():
                 raise typer.BadParameter(f"Output file already exists : {out_path}")
             out_path.parent.mkdir(parents=True, exist_ok=True)
