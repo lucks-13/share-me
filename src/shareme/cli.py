@@ -95,7 +95,12 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             if outpath.exists():
                 raise typer.BadParameter(f"Output file already exists : {outpath}")
             outpath.parent.mkdir(parents=True, exist_ok=True)
-        # with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfile:
+            with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfiles:
+                temppath = Path(tempfiles.name)
+                try:
+                    openstream(rawin, tempfiles, keybuf, hdr.noncepfx, hdr.filesz)
+                    temppath.replace(outpath)
+
         #     temppath = Path(tempfile.name)
         #     try:
         #         with tempfile.TemporaryFile() as tempSrc:
