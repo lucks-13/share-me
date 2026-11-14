@@ -10,4 +10,9 @@ def test_help() -> None:
     assert "encrypt" in result.stdout
     assert "decrypt" in result.stdout
 
-def test_enc
+def test_encrypt_and_decrypt(tmp_path : Path) -> None:
+    source = tmp_path / "test.txt"
+    encrypt = tmp_path / "test.shareme"
+    restore = tmp_path / "restored.txt"
+    source.write_text("Test Message", encoding="utf-8")
+    
