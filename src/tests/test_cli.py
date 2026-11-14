@@ -48,7 +48,7 @@ def test_video_file(tmp_path : Path) -> None:
     result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="password\n")
     assert result.exit_code == 0
     assert restore.read_bytes() == data
-
+    
 def test_empty_file(tmp_path : Path) -> None:
     source = tmp_path / "test.txt"
     encrypt = tmp_path / "test.shareme"
