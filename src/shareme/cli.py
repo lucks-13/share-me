@@ -2,7 +2,7 @@ import tempfile
 import typer
 from cryptography.exceptions import InvalidTag
 from pathlib import Path
-from .crypto import gen_meta_nonce, gennoncepfx, gen_salt, kdf_key, openmeta, sealmeta
+from .crypto import gen_meta_nonce, gen_nonce_pfx, gen_salt, kdf_key, openmeta, sealmeta
 from .encoding import encodestream, decodestream
 from .errors import sharemeerror
 from .format import hdr_sz, Hdr, packhdr, readhdr
@@ -42,18 +42,18 @@ def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
     if outpath.exists():
         raise typer.BadParameter(f"Output file already exists : {outpath}")
     file_sz = inpath.stat().st_size
-    saltbuf = gen_salt()
-    keybuf = kdf_key(pass_in, saltbuf)
-    noncepfx = gennoncepfx()
+    salt_buf = gen_salt()
+    key_buf = kdf_key(pass_in, salt_buf)
+    nonce_pfx = gen_nonce_pfx()
     metanonce = gen_meta_nonce()
     namebuf = inpath.name.encode("utf-8")
-    metabuf = sealmeta(keybuf, metanonce, namebuf)
-    hdr = Hdr(saltbuf=saltbuf, noncepfx=noncepfx, file_sz=file_sz, metanonce=metanonce, metasz=len(metabuf))
+    metabuf = sealmeta(key_buf, metanonce, namebuf)
+    hdr = Hdr(salt_buf=salt_buf, nonce_pfx=nonce_pfx, file_sz=file_sz, metanonce=metanonce, metasz=len(metabuf))
     with tempfile.TemporaryFile() as rawout:
         rawout.write(packhdr(hdr))
         rawout.write(metabuf)
         with inpath.open("rb") as source:
-            sealstream(source, rawout, keybuf, noncepfx)
+            sealstream(source, rawout, key_buf, nonce_pfx)
         rawout.seek(0)
         with outpath.open("w", encoding="ascii", newline="\n") as target:
             target.write("ShareMe : ")
@@ -85,8 +85,8 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
                 raise typer.BadParameter("Truncated metadata.")
             pass_in = get_pass("Password ")
             try:
-                keybuf = kdf_key(pass_in, hdr.saltbuf)
-                namebuf = openmeta(keybuf, hdr.metanonce, metabuf)        
+                key_buf = kdf_key(pass_in, hdr.salt_buf)
+                namebuf = openmeta(key_buf, hdr.metanonce, metabuf)        
             except InvalidTag as exc:
                 raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
             namestr = readfilename(namebuf)
@@ -99,7 +99,7 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             try:
                 with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfiles:
                     temppath = Path(tempfiles.name)
-                    openstream(rawin, tempfiles, keybuf, hdr.noncepfx, hdr.file_sz)
+                    openstream(rawin, tempfiles, key_buf, hdr.nonce_pfx, hdr.file_sz)
                 temppath.replace(outpath)
             except InvalidTag as exc:
                 if temppath is not None:

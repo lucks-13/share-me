@@ -1,23 +1,23 @@
 from typing import BinaryIO
-from .crypto import chunk_sz, mknonce, openchunk, sealchunk
+from .crypto import chunk_sz, mk_nonce, open_chunk, seal_chunk
 
-def sealstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes) -> tuple[int, int]:
+def sealstream(source : BinaryIO, target : BinaryIO, key_buf : bytes, nonce_pfx : bytes) -> tuple[int, int]:
     index = 0
     byte_cnt = 0
     while True:
         databuf = source.read(chunk_sz)
         if not databuf:
             break
-        noncebuf = mknonce(noncepfx, index)
+        nonce_buf = mk_nonce(nonce_pfx, index)
         aadbuf = index.to_bytes(8, "big")
-        cipherbuf = sealchunk(keybuf, noncebuf, databuf, aadbuf)
+        cipherbuf = seal_chunk(key_buf, nonce_buf, databuf, aadbuf)
         target.write(len(cipherbuf).to_bytes(4, "big"))
         target.write(cipherbuf)
         byte_cnt+=len(databuf)
         index +=1
     return index, byte_cnt
 
-def openstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes, file_sz : int) -> tuple[int, int]:
+def openstream(source : BinaryIO, target : BinaryIO, key_buf : bytes, nonce_pfx : bytes, file_sz : int) -> tuple[int, int]:
     index = 0
     byte_cnt = 0
     while True:
@@ -32,9 +32,9 @@ def openstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : 
         cipherbuf = source.read(ciphersz)
         if len(cipherbuf) != ciphersz:
             raise ValueError("Truncated encrypted chunk.")
-        noncebuf = mknonce(noncepfx, index)
+        nonce_buf = mk_nonce(nonce_pfx, index)
         aadbuf = index.to_bytes(8, "big")
-        databuf = openchunk(keybuf, noncebuf, cipherbuf, aadbuf)
+        databuf = open_chunk(key_buf, nonce_buf, cipherbuf, aadbuf)
         target.write(databuf)
         byte_cnt += len(databuf)
         index+=1
