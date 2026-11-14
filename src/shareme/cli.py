@@ -3,8 +3,8 @@ import typer
 from cryptography.exceptions import InvalidTag
 from pathlib import Path
 from .crypto import genMetaNonce, genNoncePfx, genSalt, kdfKey, openMeta, sealMeta
-from .encoding import encode, decode
-from .errors import ShareMeError
+from .encoding import encode
+from .errors import sharemeerror
 from .format import hdr_sz, Hdr, packHdr, readHdr
 from .stream import openStream, sealStream
 
@@ -62,7 +62,7 @@ def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
         target.write(textOut)
         target.write("\n")
     typer.echo(f"Encrypted : {inPath} -> {outPath}")
-    
+
 @app.command()
 def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), outPath : Path | None = typer.Option(None, "--output", "-o")) -> None:
     with inPath.open("r", encoding="ascii") as source:

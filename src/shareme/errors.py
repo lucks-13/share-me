@@ -1,4 +1,4 @@
-class ShareMeError(Exception):
+class sharemeerror(Exception):
     """"""
-class InvalidShareMeError(Exception):
+class invalidsharemeerror(Exception):
     """"""
