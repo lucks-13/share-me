@@ -47,25 +47,23 @@ def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
     noncepfx = gennoncepfx()
     metanonce = genmetanonce()
     namebuf = inpath.name.encode("utf-8")
-    metaBuf = sealmeta(keybuf, metanonce, namebuf)
-    hdr = Hdr(saltbuf=saltbuf, noncePfx=noncePfx, fileSz=fileSz, metaNonce=metaNonce, metaSz=len(metaBuf))
-    with tempfile.TemporaryFile() as rawOut:
-        rawOut.write(packHdr(hdr))
-        rawOut.write(metaBuf)
-        with inPath.open("rb") as source:
-            sealStream(source, rawOut, keyBuf, noncePfx)
-        rawOut.seek(0)
-        rawBuf = rawOut.read()
-    textOut = encode(rawBuf)
-    with outPath.open("w", encoding="ascii", newline="\n") as target:
-        target.write("ShareMe : ")
-        target.write(textOut)
-        target.write("\n")
-    typer.echo(f"Encrypted : {inPath} -> {outPath}")
+    metabuf = sealmeta(keybuf, metanonce, namebuf)
+    hdr = Hdr(saltbuf=saltbuf, noncepfx=noncepfx, filesz=filesz, metaNonce=metanonce, metasz=len(metabuf))
+    with tempfile.TemporaryFile() as rawout:
+        rawout.write(packhdr(hdr))
+        rawout.write(metabuf)
+        with inpath.open("rb") as source:
+            sealstream(source, rawout, keybuf, noncepfx)
+        rawout.seek(0)
+        with outpath.open("w", encoding="ascii", newline="\n") as target:
+            target.write("ShareMe : ")
+            encodestream(rawout, target)
+            target.write("\n")
+    typer.echo(f"Encrypted : {inpath} -> {outpath}")
 
 @app.command()
-def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), outPath : Path | None = typer.Option(None, "--output", "-o")) -> None:
-    with inPath.open("r", encoding="ascii") as source:
+def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), outpath : Path | None = typer.Option(None, "--output", "-o")) -> None:
+    with inpath.open("r", encoding="ascii") as source:
         textBuf = source.read().strip()
         if not textBuf.startswith("ShareMe : "):
             raise typer.BadParameter("Invalid ShareMe file.")
