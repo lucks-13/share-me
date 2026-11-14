@@ -1,4 +1,5 @@
 from typing import BinaryIO
+from collections.abc import Iterable, Iterator
 from .crypto import chunkSz, mkNonce, openChunk, sealChunk
 
 def sealStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : bytes) -> tuple[int, int]:
