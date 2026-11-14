@@ -103,7 +103,8 @@ def test_large_file(tmp_path : Path) -> None:
     encrypt = tmp_path / "test.shareme"
     restore = tmp_path / "restored.bin"
     # data = bytes(range(256))*409600 # 100 Mb
-    data = bytes(range(256))*41943040 # 10 Gb file
+    # data = bytes(range(256))*20971520 # 5 Gb
+    data = bytes(range(256))*41943040 # 10 Gb
     source.write_bytes(data)
     result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
     assert result.exit_code == 0
