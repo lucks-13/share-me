@@ -32,23 +32,23 @@ def makeOpname(nameStr : str) -> str:
     return c_name
 
 @app.command()
-def encrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), outPath : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
-    if not inPath.is_file():
+def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), outpath : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
+    if not inpath.is_file():
         raise typer.BadParameter("Input path must be a file.")
-    passIn = getPass("Password ")
-    passChk = getPass("Confirm Password ")
-    if passIn != passChk:
+    passin = getpass("Password ")
+    passchk = getpass("Confirm Password ")
+    if passin != passchk:
         raise typer.BadParameter("Passwords do not match.")
-    if outPath.exists():
-        raise typer.BadParameter(f"Output file already exists : {outPath}")
-    fileSz = inPath.stat().st_size
-    saltBuf = genSalt()
-    keyBuf = kdfKey(passIn, saltBuf)
-    noncePfx = genNoncePfx()
-    metaNonce = genMetaNonce()
-    nameBuf = inPath.name.encode("utf-8")
-    metaBuf = sealMeta(keyBuf, metaNonce, nameBuf)
-    hdr = Hdr(saltBuf=saltBuf, noncePfx=noncePfx, fileSz=fileSz, metaNonce=metaNonce, metaSz=len(metaBuf))
+    if outpath.exists():
+        raise typer.BadParameter(f"Output file already exists : {outpath}")
+    filesz = inpath.stat().st_size
+    saltbuf = gensalt()
+    keybuf = kdfkey(passin, saltbuf)
+    noncepfx = gennoncepfx()
+    metanonce = genmetanonce()
+    namebuf = inpath.name.encode("utf-8")
+    metaBuf = sealmeta(keybuf, metanonce, namebuf)
+    hdr = Hdr(saltbuf=saltbuf, noncePfx=noncePfx, fileSz=fileSz, metaNonce=metaNonce, metaSz=len(metaBuf))
     with tempfile.TemporaryFile() as rawOut:
         rawOut.write(packHdr(hdr))
         rawOut.write(metaBuf)

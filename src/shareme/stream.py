@@ -1,5 +1,4 @@
 from typing import BinaryIO
-from collections.abc import Iterable, Iterator
 from .crypto import chunksz, mknonce, openchunk, sealchunk
 
 def sealStream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes) -> tuple[int, int]:
@@ -22,23 +21,23 @@ def openStream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : 
     index = 0
     bytecnt = 0
     while True:
-        sizeBuf = source.read(4)
-        if not sizeBuf:
+        sizebuf = source.read(4)
+        if not sizebuf:
             break
-        if len(sizeBuf) != 4:
+        if len(sizebuf) != 4:
             raise ValueError("Truncated chunk header.")
-        cipherSz = int.from_bytes(sizeBuf, "big")
-        if cipherSz < 17:
+        ciphersz = int.from_bytes(sizebuf, "big")
+        if ciphersz < 17:
             raise ValueError("Invalid encrypted chunk size.")
-        cipherBuf = source.read(cipherSz)
-        if len(cipherBuf) != cipherSz:
+        cipherbuf = source.read(ciphersz)
+        if len(cipherbuf) != ciphersz:
             raise ValueError("Truncated encrypted chunk.")
-        nonceBuf = mkNonce(noncePfx, index)
-        aadBuf = index.to_bytes(8, "big")
-        dataBuf = openChunk(keyBuf, nonceBuf, cipherBuf, aadBuf)
-        target.write(dataBuf)
-        byteCnt += len(dataBuf)
+        noncebuf = mknonce(noncepfx, index)
+        aadbuf = index.to_bytes(8, "big")
+        databuf = openchunk(keybuf, noncebuf, cipherbuf, aadbuf)
+        target.write(databuf)
+        bytecnt += len(databuf)
         index+=1
-    if byteCnt != fileSz:
+    if bytecnt != filesz:
         raise ValueError("File Size Verification failed.")
-    return index, byteCnt
+    return index, bytecnt
