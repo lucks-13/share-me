@@ -1,26 +1,26 @@
 from typing import BinaryIO
 from collections.abc import Iterable, Iterator
-from .crypto import chunkSz, mkNonce, openChunk, sealChunk
+from .crypto import chunksz, mknonce, openchunk, sealchunk
 
-def sealStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : bytes) -> tuple[int, int]:
+def sealStream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes) -> tuple[int, int]:
     index = 0
-    byteCnt = 0
+    bytecnt = 0
     while True:
-        dataBuf = source.read(chunkSz)
-        if not dataBuf:
+        databuf = source.read(chunksz)
+        if not databuf:
             break
-        nonceBuf = mkNonce(noncePfx, index)
-        aadBuf = index.to_bytes(8, "big")
-        cipherBuf = sealChunk(keyBuf, nonceBuf, dataBuf, aadBuf)
-        target.write(len(cipherBuf).to_bytes(4, "big"))
-        target.write(cipherBuf)
-        byteCnt+=len(dataBuf)
+        noncebuf = mknonce(noncepfx, index)
+        aadbuf = index.to_bytes(8, "big")
+        cipherbuf = sealchunk(keybuf, noncebuf, databuf, aadbuf)
+        target.write(len(cipherbuf).to_bytes(4, "big"))
+        target.write(cipherbuf)
+        bytecnt+=len(databuf)
         index +=1
-    return index, byteCnt
+    return index, bytecnt
 
-def openStream(source : BinaryIO, target : BinaryIO, keyBuf : bytes, noncePfx : bytes, fileSz : int) -> tuple[int, int]:
+def openStream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes, filesz : int) -> tuple[int, int]:
     index = 0
-    byteCnt = 0
+    bytecnt = 0
     while True:
         sizeBuf = source.read(4)
         if not sizeBuf:

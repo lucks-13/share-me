@@ -15,24 +15,24 @@ def gensalt() -> bytes:
 def kdfkey(passin : str, saltbuf : bytes) -> bytes:
     return hash_secret_raw(secret=passin.encode("utf-8"), salt= saltbuf, time_cost=3, memory_cost=64*1024, parallelism=2, hash_len=keylen, type=Type.ID)
 
-def genNoncePfx() -> bytes:
+def gennoncepfx() -> bytes:
     return os.urandom(8)
 
-def mkNonce(noncePfx : bytes, index : int) -> bytes:
-    if len(noncePfx) != 8:
+def mknonce(noncepfx : bytes, index : int) -> bytes:
+    if len(noncepfx) != 8:
         raise ValueError("Nonce prefix must be 8 bytes.")
     if index < 0 or index >= 2**32:
         raise ValueError("Invalid chunk index.")
-    return noncePfx + struct.pack(">I", index)
+    return noncepfx + struct.pack(">I", index)
     
-def genMetaNonce() -> bytes:
-     return os.urandom(nonceLen)
+def genmetanonce() -> bytes:
+     return os.urandom(noncelen)
 
-def sealChunk(keyBuf : bytes, nonceBuf : bytes, dataBuf : bytes, aadBuf : bytes = b"") -> bytes:
-    return AESGCM(keyBuf).encrypt(nonceBuf, dataBuf, aadBuf)
+def sealchunk(keybuf : bytes, noncebuf : bytes, databuf : bytes, aadbuf : bytes = b"") -> bytes:
+    return AESGCM(keybuf).encrypt(noncebuf, databuf, aadbuf)
 
-def openChunk(keyBuf : bytes, nonceBuf : bytes, cipherBuf : bytes, aadBuf : bytes = b"") ->bytes:
-        return AESGCM(keyBuf).decrypt(nonceBuf, cipherBuf, aadBuf)
+def openchunk(keybuf : bytes, noncebuf : bytes, cipherbuf : bytes, aadbuf : bytes = b"") ->bytes:
+        return AESGCM(keybuf).decrypt(noncebuf, cipherbuf, aadbuf)
 
 def sealMeta(keyBuf : bytes, nonceBuf : bytes, nameBuf : bytes) -> bytes:
      return AESGCM(keyBuf).encrypt(nonceBuf, nameBuf, b'shareme-meta')
