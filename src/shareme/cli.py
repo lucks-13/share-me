@@ -60,7 +60,7 @@ def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             encodestream(rawout, target)
             target.write("\n")
     typer.echo(f"Encrypted : {inpath} -> {outpath}")
-    
+
 @app.command()
 def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), outpath : Path | None = typer.Option(None, "--output", "-o")) -> None:
     with inpath.open("r", encoding="ascii") as source:
