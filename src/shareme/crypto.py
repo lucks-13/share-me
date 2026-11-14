@@ -25,7 +25,7 @@ def mknonce(noncepfx : bytes, index : int) -> bytes:
         raise ValueError("Invalid chunk index.")
     return noncepfx + struct.pack(">I", index)
  
-def genmetanonce() -> bytes:
+def gen_meta_nonce() -> bytes:
      return os.urandom(noncelen)
 
 def sealchunk(keybuf : bytes, noncebuf : bytes, databuf : bytes, aadbuf : bytes = b"") -> bytes:

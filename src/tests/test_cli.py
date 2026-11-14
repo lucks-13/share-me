@@ -20,5 +20,6 @@ def test_encrypt_and_decrypt(tmp_path : Path) -> None:
     assert encrypt.exists()
     result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="password\n")
     assert result.exit_code == 0
-    assert re
-    
+    assert restore.read_text(encoding="utf-8") == "Test Message"
+
+def test_binfile

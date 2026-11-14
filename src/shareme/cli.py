@@ -2,7 +2,7 @@ import tempfile
 import typer
 from cryptography.exceptions import InvalidTag
 from pathlib import Path
-from .crypto import genmetanonce, gennoncepfx, gen_salt, kdfkey, openmeta, sealmeta
+from .crypto import gen_meta_nonce, gennoncepfx, gen_salt, kdfkey, openmeta, sealmeta
 from .encoding import encodestream, decodestream
 from .errors import sharemeerror
 from .format import hdr_sz, Hdr, packhdr, readhdr
@@ -41,14 +41,14 @@ def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
         raise typer.BadParameter("Passwords do not match.")
     if outpath.exists():
         raise typer.BadParameter(f"Output file already exists : {outpath}")
-    filesz = inpath.stat().st_size
+    file_sz = inpath.stat().st_size
     saltbuf = gen_salt()
     keybuf = kdfkey(pass_in, saltbuf)
     noncepfx = gennoncepfx()
-    metanonce = genmetanonce()
+    metanonce = gen_meta_nonce()
     namebuf = inpath.name.encode("utf-8")
     metabuf = sealmeta(keybuf, metanonce, namebuf)
-    hdr = Hdr(saltbuf=saltbuf, noncepfx=noncepfx, filesz=filesz, metanonce=metanonce, metasz=len(metabuf))
+    hdr = Hdr(saltbuf=saltbuf, noncepfx=noncepfx, file_sz=file_sz, metanonce=metanonce, metasz=len(metabuf))
     with tempfile.TemporaryFile() as rawout:
         rawout.write(packhdr(hdr))
         rawout.write(metabuf)
@@ -99,7 +99,7 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             try:
                 with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfiles:
                     temppath = Path(tempfiles.name)
-                    openstream(rawin, tempfiles, keybuf, hdr.noncepfx, hdr.filesz)
+                    openstream(rawin, tempfiles, keybuf, hdr.noncepfx, hdr.file_sz)
                 temppath.replace(outpath)
             except InvalidTag as exc:
                 if temppath is not None:

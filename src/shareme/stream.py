@@ -17,7 +17,7 @@ def sealstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : 
         index +=1
     return index, bytecnt
 
-def openstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes, filesz : int) -> tuple[int, int]:
+def openstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes, file_sz : int) -> tuple[int, int]:
     index = 0
     bytecnt = 0
     while True:
@@ -38,6 +38,6 @@ def openstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : 
         target.write(databuf)
         bytecnt += len(databuf)
         index+=1
-    if bytecnt != filesz:
+    if bytecnt != file_sz:
         raise ValueError("File Size Verification failed.")
     return index, bytecnt
