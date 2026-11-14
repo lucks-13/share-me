@@ -49,6 +49,18 @@ test.shareme
 
 2. Decrypt a file.
 ```
-share-me decrypt test.shareme -o 
-
+share-me decrypt test.shareme -o restore.txt
 ```
+make sure that you remember the password
+
+# Algorithm used { for nerd }
+* argon2id for password based key derivation
+* aes-256-gcm for authenticated encryption
+
+# What i demonstrate.
+* building cli using typer
+* working with password based key derivation and authenticated encryption
+* processinf files in chunks
+
+# Ai Disclosure
+Google chrome ai search
