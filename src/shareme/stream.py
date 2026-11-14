@@ -1,7 +1,7 @@
 from typing import BinaryIO
 from .crypto import chunksz, mknonce, openchunk, sealchunk
 
-def sealStream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes) -> tuple[int, int]:
+def sealstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes) -> tuple[int, int]:
     index = 0
     bytecnt = 0
     while True:
@@ -17,7 +17,7 @@ def sealStream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : 
         index +=1
     return index, bytecnt
 
-def openStream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes, filesz : int) -> tuple[int, int]:
+def openstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes, filesz : int) -> tuple[int, int]:
     index = 0
     bytecnt = 0
     while True:

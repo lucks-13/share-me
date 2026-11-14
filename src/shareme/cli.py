@@ -48,7 +48,7 @@ def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
     metanonce = genmetanonce()
     namebuf = inpath.name.encode("utf-8")
     metabuf = sealmeta(keybuf, metanonce, namebuf)
-    hdr = Hdr(saltbuf=saltbuf, noncepfx=noncepfx, filesz=filesz, metaNonce=metanonce, metasz=len(metabuf))
+    hdr = Hdr(saltbuf=saltbuf, noncepfx=noncepfx, filesz=filesz, metanonce=metanonce, metasz=len(metabuf))
     with tempfile.TemporaryFile() as rawout:
         rawout.write(packhdr(hdr))
         rawout.write(metabuf)
