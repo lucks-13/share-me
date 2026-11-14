@@ -20,15 +20,15 @@ def readfilename(metabuf : bytes) -> str:
     try:
         namestr = metabuf.decode("utf-8")
     except UnicodeDecodeError as exc:
-        raise ShareMeError("Invalid encrypted filename.") from exc
-    if not nameStr:
-        raise ShareMeError("Empty encrypted filename.") from exc
-    return nameStr
+        raise sharemeerror("Invalid encrypted filename.") from exc
+    if not namestr:
+        raise sharemeerror("Empty encrypted filename.") from exc
+    return namestr
 
-def makeOpname(nameStr : str) -> str:
-    c_name = Path(nameStr).name
+def makeopname(namestr : str) -> str:
+    c_name = Path(namestr).name
     if c_name in {"",".",".."}:
-        raise ShareMeError("Invalid output filename.")
+        raise sharemeerror("Invalid output filename.")
     return c_name
 
 @app.command()
@@ -69,10 +69,22 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             typer.BadParameter("Invalid ShareMe file.")
         with tempfile.TemporaryFile() as rawin:
             try:
-                decodestream(source, rawin):
+                decodestream(source, rawin)
             except sharemeerror as exc:
                 raise typer.BadParameter(str(exc)) from exc
             rawin.seek(0)
+            headerbuf = rawin.read(hdr_sz)
+            if len(headerbuf) < hdr_sz:
+                raise typer.BadParameter
+
+
+
+
+
+
+
+
+
         if len(rawbuf) < hdr_sz:
             raise typer.BadParameter("ShareMe file is too short.")
         hdr = readhdr(rawbuf[:hdr_sz])
