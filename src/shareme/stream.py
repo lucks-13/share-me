@@ -1,11 +1,11 @@
 from typing import BinaryIO
-from .crypto import chunksz, mknonce, openchunk, sealchunk
+from .crypto import chunk_sz, mknonce, openchunk, sealchunk
 
 def sealstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes) -> tuple[int, int]:
     index = 0
     byte_cnt = 0
     while True:
-        databuf = source.read(chunksz)
+        databuf = source.read(chunk_sz)
         if not databuf:
             break
         noncebuf = mknonce(noncepfx, index)

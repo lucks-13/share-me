@@ -83,4 +83,3 @@ def test_encryption(tmp_path : Path) -> None:
     result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt_2)], input="password\npassword\n")
     assert result.exit_code == 0
     assert encrypt_1.read_bytes() != encrypt_2.read_bytes()
-

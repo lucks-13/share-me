@@ -7,12 +7,12 @@ salt_len = 16
 key_len = 32
 noncelen = 12
 taglen = 16
-chunksz = 1024 * 1024
+chunk_sz = 1024 * 1024
 
 def gen_salt() -> bytes:
     return os.urandom(salt_len)
 
-def kdfkey(pass_in : str, saltbuf : bytes) -> bytes:
+def kdf_key(pass_in : str, saltbuf : bytes) -> bytes:
     return hash_secret_raw(secret=pass_in.encode("utf-8"), salt= saltbuf, time_cost=3, memory_cost=64*1024, parallelism=2, hash_len=key_len, type=Type.ID)
 
 def gennoncepfx() -> bytes:

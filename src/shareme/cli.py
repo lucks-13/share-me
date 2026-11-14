@@ -2,7 +2,7 @@ import tempfile
 import typer
 from cryptography.exceptions import InvalidTag
 from pathlib import Path
-from .crypto import gen_meta_nonce, gennoncepfx, gen_salt, kdfkey, openmeta, sealmeta
+from .crypto import gen_meta_nonce, gennoncepfx, gen_salt, kdf_key, openmeta, sealmeta
 from .encoding import encodestream, decodestream
 from .errors import sharemeerror
 from .format import hdr_sz, Hdr, packhdr, readhdr
@@ -13,7 +13,7 @@ app = typer.Typer(
     help = "Secure text based file sharing cli."
 )
 
-def getpass(prompt : str) -> str:
+def get_pass(prompt : str) -> str:
     return typer.prompt(prompt, hide_input=True)
 
 def readfilename(metabuf : bytes) -> str:
@@ -35,15 +35,15 @@ def makeopname(namestr : str) -> str:
 def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), outpath : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
     if not inpath.is_file():
         raise typer.BadParameter("Input path must be a file.")
-    pass_in = getpass("Password ")
-    passchk = getpass("Confirm Password ")
+    pass_in = get_pass("Password ")
+    passchk = get_pass("Confirm Password ")
     if pass_in != passchk:
         raise typer.BadParameter("Passwords do not match.")
     if outpath.exists():
         raise typer.BadParameter(f"Output file already exists : {outpath}")
     file_sz = inpath.stat().st_size
     saltbuf = gen_salt()
-    keybuf = kdfkey(pass_in, saltbuf)
+    keybuf = kdf_key(pass_in, saltbuf)
     noncepfx = gennoncepfx()
     metanonce = gen_meta_nonce()
     namebuf = inpath.name.encode("utf-8")
@@ -83,9 +83,9 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             metabuf = rawin.read(hdr.metasz)
             if len(metabuf) < hdr.metasz:
                 raise typer.BadParameter("Truncated metadata.")
-            pass_in = getpass("Password ")
+            pass_in = get_pass("Password ")
             try:
-                keybuf = kdfkey(pass_in, hdr.saltbuf)
+                keybuf = kdf_key(pass_in, hdr.saltbuf)
                 namebuf = openmeta(keybuf, hdr.metanonce, metabuf)        
             except InvalidTag as exc:
                 raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
