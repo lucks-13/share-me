@@ -79,7 +79,7 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             try:
                 hdr = readhdr(headerbuf)
             except ValueError as exc:
-                typer.BadParameter(str(exc)) from exc
+                raise typer.BadParameter(str(exc)) from exc
             metabuf = rawin.read(hdr.metasz)
             if len(metabuf) < hdr.metasz:
                 raise typer.BadParameter("Truncated metadata.")
