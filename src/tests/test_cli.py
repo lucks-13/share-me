@@ -48,7 +48,7 @@ def test_video_file(tmp_path : Path) -> None:
     result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="password\n")
     assert result.exit_code == 0
     assert restore.read_bytes() == data
-    
+
 def test_empty_file(tmp_path : Path) -> None:
     source = tmp_path / "test.txt"
     encrypt = tmp_path / "test.shareme"
@@ -97,3 +97,16 @@ def test_encryption(tmp_path : Path) -> None:
     result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt_2)], input="password\npassword\n")
     assert result.exit_code == 0
     assert encrypt_1.read_bytes() != encrypt_2.read_bytes()
+
+def test_large_file(tmp_path : Path) -> None:
+    source = tmp_path / "test.bin"
+    encrypt = tmp_path / "test.shareme"
+    restore = tmp_path / "restored.bin"
+    data = bytes(range(256))*100
+    source.write_bytes(data)
+    result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
+    assert result.exit_code == 0
+    assert encrypt.exists()
+    result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="password\n")
+    assert result.exit_code == 0
+    assert restore.read_bytes() == data
