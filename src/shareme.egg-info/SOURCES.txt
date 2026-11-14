@@ -1,6 +1,11 @@
 pyproject.toml
 src/shareme/__init__.py
 src/shareme/cli.py
+src/shareme/crypto.py
+src/shareme/encoding.py
+src/shareme/errors.py
+src/shareme/format.py
+src/shareme/stream.py
 src/shareme.egg-info/PKG-INFO
 src/shareme.egg-info/SOURCES.txt
 src/shareme.egg-info/dependency_links.txt
