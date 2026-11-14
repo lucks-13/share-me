@@ -64,17 +64,18 @@ def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
 @app.command()
 def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), outpath : Path | None = typer.Option(None, "--output", "-o")) -> None:
     with inpath.open("r", encoding="ascii") as source:
-        textBuf = source.read().strip()
-        if not textBuf.startswith("ShareMe : "):
-            raise typer.BadParameter("Invalid ShareMe file.")
-        payload = textBuf[len("ShareMe : "):]
-        try:
-            rawBuf = decode(payload)
-        except ShareMeError as exc:
-            raise typer.BadParameter(str(exc)) from exc
-        if len(rawBuf) < hdr_sz:
+        prefix = source.read(len("ShareMe : "))
+        if prefix != "ShareMe : ":
+            typer.BadParameter("Invalid ShareMe file.")
+        with tempfile.TemporaryFile() as rawin:
+            try:
+                decodestream(source, rawin):
+            except sharemeerror as exc:
+                raise typer.BadParameter(str(exc)) from exc
+            rawin.seek(0)
+        if len(rawbuf) < hdr_sz:
             raise typer.BadParameter("ShareMe file is too short.")
-        hdr = readHdr(rawBuf[:hdr_sz])
+        hdr = readHdr(rawbuf[:hdr_sz])
         metaEnd = hdr_sz + hdr.metaSz
         if len(rawBuf) < metaEnd:
             raise typer.BadParameter("Truncated metadata.")
