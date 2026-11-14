@@ -82,7 +82,7 @@ def decrypt(inPath : Path = typer.Argument(..., exists=True, readable=True), out
             raise typer.BadParameter("Truncated metadata.")
         metaBuf = rawBuf[hdr_sz:metaEnd]
         chunkBuf = rawBuf[metaEnd:]
-        passIn = getPass("Password :")
+        passIn = getPass("Password ")
         keyBuf = kdfKey(passIn, hdr.saltBuf)
         nameBuf = openMeta(keyBuf, hdr.metaNonce, metaBuf)
         nameStr = readFileName(nameBuf)
