@@ -15,4 +15,10 @@ def test_encrypt_and_decrypt(tmp_path : Path) -> None:
     encrypt = tmp_path / "test.shareme"
     restore = tmp_path / "restored.txt"
     source.write_text("Test Message", encoding="utf-8")
+    result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
+    assert result.exit_code == 0
+    assert encrypt.exists()
+    result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="password\n")
+    assert result.exit_code == 0
+    assert re
     
