@@ -1,6 +1,6 @@
 import struct
 from dataclasses import dataclass
-from .crypto import saltLen, nonceLen
+from .crypto import saltlen, nonceLen
 
 magic = b"share-me"
 v = 1

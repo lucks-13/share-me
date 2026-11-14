@@ -2,11 +2,11 @@ import tempfile
 import typer
 from cryptography.exceptions import InvalidTag
 from pathlib import Path
-from .crypto import genMetaNonce, genNoncePfx, genSalt, kdfKey, openMeta, sealMeta
-from .encoding import encode
+from .crypto import genmetanonce, gennoncepfx, gensalt, kdfkey, openmeta, sealmeta
+from .encoding import encodestream, decodestream
 from .errors import sharemeerror
-from .format import hdr_sz, Hdr, packHdr, readHdr
-from .stream import openStream, sealStream
+from .format import hdr_sz, hdr, packhdr, readhdr
+from .stream import openstream, sealstream
 
 app = typer.Typer(
     name = "shareme",

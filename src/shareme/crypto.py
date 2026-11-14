@@ -3,17 +3,17 @@ import struct
 from argon2.low_level import Type, hash_secret_raw
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-saltLen = 16
-keyLen = 32
-nonceLen = 12
-tagLen = 16
-chunkSz = 1024 * 1024
+saltlen = 16
+keylen = 32
+noncelen = 12
+taglen = 16
+chunksz = 1024 * 1024
 
-def genSalt() -> bytes:
-    return os.urandom(saltLen)
+def gensalt() -> bytes:
+    return os.urandom(saltlen)
 
-def kdfKey(passIn : str, saltBuf : bytes) -> bytes:
-    return hash_secret_raw(secret=passIn.encode("utf-8"), salt= saltBuf, time_cost=3, memory_cost=64*1024, parallelism=2, hash_len=keyLen, type=Type.ID)
+def kdfkey(passin : str, saltbuf : bytes) -> bytes:
+    return hash_secret_raw(secret=passin.encode("utf-8"), salt= saltbuf, time_cost=3, memory_cost=64*1024, parallelism=2, hash_len=keylen, type=Type.ID)
 
 def genNoncePfx() -> bytes:
     return os.urandom(8)
