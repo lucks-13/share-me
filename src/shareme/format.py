@@ -15,7 +15,7 @@ class Hdr:
     meta_nonce : bytes
     meta_sz : int
 
-def packhdr(hdr : Hdr) -> bytes:
+def pack_hdr(hdr : Hdr) -> bytes:
     if len(hdr.salt_buf) != salt_len:
         raise ValueError("Invalid salt size.")
     if len(hdr.nonce_pfx) != 8:
@@ -28,7 +28,7 @@ def packhdr(hdr : Hdr) -> bytes:
         raise ValueError("Invalid metadata size.")
     return struct.pack(hdr_fmt, magic, v, 0, hdr.salt_buf, hdr.nonce_pfx, hdr.file_sz, hdr.meta_sz, hdr.meta_nonce)
 
-def readhdr(data_buf : bytes) -> Hdr:
+def read_hdr(data_buf : bytes) -> Hdr:
     if len(data_buf) != hdr_sz:
         raise ValueError("Invalid ShareMe header size.")
     magic_buf, ver, flags, salt_buf, nonce_pfx, file_sz, meta_sz, meta_nonce = struct.unpack(hdr_fmt, data_buf)

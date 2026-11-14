@@ -12,30 +12,30 @@ def decode(text : str) -> bytes:
     except (UnicodeEncodeError, binascii.Error, ValueError) as exc:
         raise invalidsharemeerror("Invalid ShareMe encoding.") from exc
 
-def encodestream(source : BinaryIO, target : TextIO, chuncksize : int = 1024*1024) -> None:
+def encode_stream(source : BinaryIO, target : TextIO, chuncksize : int = 1024*1024) -> None:
     pending = b""
     while True:
         data_buf = source.read(chuncksize)
         if not data_buf:
             break
         data_buf = pending + data_buf
-        usesz = len(data_buf) - (len(data_buf)%3)
-        if usesz:
-            target.write(base64.urlsafe_b64encode(data_buf[:usesz]).decode("ascii"))
-            pending = data_buf[usesz:]
+        use_sz = len(data_buf) - (len(data_buf)%3)
+        if use_sz:
+            target.write(base64.urlsafe_b64encode(data_buf[:use_sz]).decode("ascii"))
+            pending = data_buf[use_sz:]
     if pending:
         target.write(base64.urlsafe_b64encode(pending).decode("ascii"))
 
-def decodestream(source : TextIO, target : BinaryIO, chunksize : int = 1024*1024) -> None:
+def decode_stream(source : TextIO, target : BinaryIO, chunksize : int = 1024*1024) -> None:
     pending = ""
     while True:
-        textbuf = source.read(chunksize)
-        if not textbuf:
+        text_buf = source.read(chunksize)
+        if not text_buf:
             break
-        pending += textbuf
-        usesz = len(pending) - (len(pending) % 4)
-        if usesz:
+        pending += text_buf
+        use_sz = len(pending) - (len(pending) % 4)
+        if use_sz:
             try:
-                target.write(base64.urlsafe_b64decode(pending[:usesz].encode("ascii")))
+                target.write(base64.urlsafe_b64decode(pending[:use_sz].encode("ascii")))
             except (UnicodeEncodeError, binascii.Error, ValueError) as exc:
                 raise invalidsharemeerror("Invalid ShareMe encoding.") from exc

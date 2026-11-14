@@ -17,7 +17,7 @@ def seal_stream(source : BinaryIO, target : BinaryIO, key_buf : bytes, nonce_pfx
         index +=1
     return index, byte_cnt
 
-def openstream(source : BinaryIO, target : BinaryIO, key_buf : bytes, nonce_pfx : bytes, file_sz : int) -> tuple[int, int]:
+def open_stream(source : BinaryIO, target : BinaryIO, key_buf : bytes, nonce_pfx : bytes, file_sz : int) -> tuple[int, int]:
     index = 0
     byte_cnt = 0
     while True:

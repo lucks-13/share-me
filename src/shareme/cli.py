@@ -3,10 +3,10 @@ import typer
 from cryptography.exceptions import InvalidTag
 from pathlib import Path
 from .crypto import gen_meta_nonce, gen_nonce_pfx, gen_salt, kdf_key, open_meta, seal_meta
-from .encoding import encodestream, decodestream
+from .encoding import encode_stream, decode_stream
 from .errors import sharemeerror
-from .format import hdr_sz, Hdr, packhdr, readhdr
-from .stream import openstream, seal_stream
+from .format import hdr_sz, Hdr, pack_hdr, read_hdr
+from .stream import open_stream, seal_stream
 
 app = typer.Typer(
     name = "shareme",
@@ -16,17 +16,17 @@ app = typer.Typer(
 def get_pass(prompt : str) -> str:
     return typer.prompt(prompt, hide_input=True)
 
-def readfilename(metabuf : bytes) -> str:
+def read_file_name(meta_buf : bytes) -> str:
     try:
-        namestr = metabuf.decode("utf-8")
+        name_str = meta_buf.decode("utf-8")
     except UnicodeDecodeError as exc:
         raise sharemeerror("Invalid encrypted filename.") from exc
-    if not namestr:
+    if not name_str:
         raise sharemeerror("Empty encrypted filename.") from exc
-    return namestr
+    return name_str
 
-def makeopname(namestr : str) -> str:
-    c_name = Path(namestr).name
+def makeopname(name_str : str) -> str:
+    c_name = Path(name_str).name
     if c_name in {"",".",".."}:
         raise sharemeerror("Invalid output filename.")
     return c_name
@@ -47,17 +47,17 @@ def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
     nonce_pfx = gen_nonce_pfx()
     meta_nonce = gen_meta_nonce()
     namebuf = inpath.name.encode("utf-8")
-    metabuf = seal_meta(key_buf, meta_nonce, namebuf)
-    hdr = Hdr(salt_buf=salt_buf, nonce_pfx=nonce_pfx, file_sz=file_sz, meta_nonce=meta_nonce, meta_sz=len(metabuf))
+    meta_buf = seal_meta(key_buf, meta_nonce, namebuf)
+    hdr = Hdr(salt_buf=salt_buf, nonce_pfx=nonce_pfx, file_sz=file_sz, meta_nonce=meta_nonce, meta_sz=len(meta_buf))
     with tempfile.TemporaryFile() as rawout:
-        rawout.write(packhdr(hdr))
-        rawout.write(metabuf)
+        rawout.write(pack_hdr(hdr))
+        rawout.write(meta_buf)
         with inpath.open("rb") as source:
             seal_stream(source, rawout, key_buf, nonce_pfx)
         rawout.seek(0)
         with outpath.open("w", encoding="ascii", newline="\n") as target:
             target.write("ShareMe : ")
-            encodestream(rawout, target)
+            encode_stream(rawout, target)
             target.write("\n")
     typer.echo(f"Encrypted : {inpath} -> {outpath}")
 
@@ -69,7 +69,7 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             typer.BadParameter("Invalid ShareMe file.")
         with tempfile.TemporaryFile() as rawin:
             try:
-                decodestream(source, rawin)
+                decode_stream(source, rawin)
             except sharemeerror as exc:
                 raise typer.BadParameter(str(exc)) from exc
             rawin.seek(0)
@@ -77,21 +77,21 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             if len(headerbuf) < hdr_sz:
                 raise typer.BadParameter("ShareMe file is too short.")
             try:
-                hdr = readhdr(headerbuf)
+                hdr = read_hdr(headerbuf)
             except ValueError as exc:
                 raise typer.BadParameter(str(exc)) from exc
-            metabuf = rawin.read(hdr.meta_sz)
-            if len(metabuf) < hdr.meta_sz:
+            meta_buf = rawin.read(hdr.meta_sz)
+            if len(meta_buf) < hdr.meta_sz:
                 raise typer.BadParameter("Truncated metadata.")
             pass_in = get_pass("Password ")
             try:
                 key_buf = kdf_key(pass_in, hdr.salt_buf)
-                namebuf = open_meta(key_buf, hdr.meta_nonce, metabuf)        
+                namebuf = open_meta(key_buf, hdr.meta_nonce, meta_buf)        
             except InvalidTag as exc:
                 raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
-            namestr = readfilename(namebuf)
+            name_str = read_file_name(namebuf)
             if outpath is None:
-                outpath = Path(makeopname(namestr))
+                outpath = Path(makeopname(name_str))
             if outpath.exists():
                 raise typer.BadParameter(f"Output file already exists : {outpath}")
             outpath.parent.mkdir(parents=True, exist_ok=True)
@@ -99,7 +99,7 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             try:
                 with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfiles:
                     temppath = Path(tempfiles.name)
-                    openstream(rawin, tempfiles, key_buf, hdr.nonce_pfx, hdr.file_sz)
+                    open_stream(rawin, tempfiles, key_buf, hdr.nonce_pfx, hdr.file_sz)
                 temppath.replace(outpath)
             except InvalidTag as exc:
                 if temppath is not None:
