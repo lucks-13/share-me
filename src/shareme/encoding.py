@@ -19,5 +19,10 @@ def encodeStream(source : BinaryIO, target : TextIO, chunckSize : int = 1024*102
         if not dataBuf:
             break
         dataBuf = pending + dataBuf
-        useSz = 
+        useSz = len(dataBuf) - (len(dataBuf)%3)
+        if useSz:
+            target.write(base64.urlsafe_b64encode(dataBuf[:useSz]).decode("ascii"))
+            pending = dataBuf[useSz:]
+    if pending:
+        target.write
     
