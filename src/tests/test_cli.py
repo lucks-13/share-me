@@ -47,3 +47,16 @@ def test_empty_file(tmp_path : Path) -> None:
     assert result.exit_code == 0
     assert restore.read_bytes() == b""
 
+def test_wrong_password(tmp_path : Path) -> None:
+    source = tmp_path / "test.txt"
+    encrypt = tmp_path / "test.shareme"
+    restore = tmp_path / "restored.txt"
+    source.write_text("Test Message", encoding="utf-8")
+    result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="correct\ncorrect\n")
+    assert result.exit_code == 0
+    assert encrypt.exists()
+    result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="wrong\n")
+    assert result.exit_code != 0
+    assert not restore.exists()
+
+

@@ -3,7 +3,7 @@ from .crypto import chunksz, mknonce, openchunk, sealchunk
 
 def sealstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes) -> tuple[int, int]:
     index = 0
-    bytecnt = 0
+    byte_cnt = 0
     while True:
         databuf = source.read(chunksz)
         if not databuf:
@@ -13,13 +13,13 @@ def sealstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : 
         cipherbuf = sealchunk(keybuf, noncebuf, databuf, aadbuf)
         target.write(len(cipherbuf).to_bytes(4, "big"))
         target.write(cipherbuf)
-        bytecnt+=len(databuf)
+        byte_cnt+=len(databuf)
         index +=1
-    return index, bytecnt
+    return index, byte_cnt
 
 def openstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : bytes, file_sz : int) -> tuple[int, int]:
     index = 0
-    bytecnt = 0
+    byte_cnt = 0
     while True:
         sizebuf = source.read(4)
         if not sizebuf:
@@ -36,8 +36,8 @@ def openstream(source : BinaryIO, target : BinaryIO, keybuf : bytes, noncepfx : 
         aadbuf = index.to_bytes(8, "big")
         databuf = openchunk(keybuf, noncebuf, cipherbuf, aadbuf)
         target.write(databuf)
-        bytecnt += len(databuf)
+        byte_cnt += len(databuf)
         index+=1
-    if bytecnt != file_sz:
+    if byte_cnt != file_sz:
         raise ValueError("File Size Verification failed.")
-    return index, bytecnt
+    return index, byte_cnt
