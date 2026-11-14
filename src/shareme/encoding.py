@@ -29,5 +29,8 @@ def encodeStream(source : BinaryIO, target : TextIO, chunckSize : int = 1024*102
 def decodeStream(source : TextIO, target : BinaryIO, chunkSize : int = 1024*1024) -> None:
     pending = ""
     while True:
-        textBuf = 
+        textBuf = source.read(chunkSize)
+        if not textBuf:
+            break
+        pending =  
     
