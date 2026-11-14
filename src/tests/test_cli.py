@@ -69,8 +69,22 @@ def test_corrupt_file(tmp_path : Path) -> None:
     assert result.exit_code == 0
     data = encrypt.read_text(encoding="ascii")
     corrupt.write_text(data[:20]+("A" if data[20] != "A" else "B")+data[21:], encoding="ascii")
-    
-    assert encrypt.exists()
-    result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="wrong\n")
+    result = runner.invoke(app, ["decrypt", str(corrupt), "-o", str(restore)], input="correct\n")
     assert result.exit_code != 0
     assert not restore.exists()
+
+def test_encryption(tmp_path : Path) -> None:
+    source = tmp_path / "test.txt"
+    encrypt_1 = tmp_path / "test_1.shareme"
+    encrypt_2 = tmp_path / "test_1.shareme"
+    
+
+
+    
+    source.write_text("Test Message", encoding="utf-8")
+    result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
+    assert result.exit_code == 0
+    assert encrypt.exists()
+    result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="password\n")
+    assert result.exit_code == 0
+    assert restore.read_text(encoding="utf-8") == "Test Message"
