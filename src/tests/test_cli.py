@@ -22,4 +22,28 @@ def test_encrypt_and_decrypt(tmp_path : Path) -> None:
     assert result.exit_code == 0
     assert restore.read_text(encoding="utf-8") == "Test Message"
 
-def test_binfile
+def test_binary_file(tmp_path : Path) -> None:
+    source = tmp_path / "test.bin"
+    encrypt = tmp_path / "test.shareme"
+    restore = tmp_path / "restored.bin"
+    data = bytes(range(256))*100
+    source.write_bytes(data)
+    result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
+    assert result.exit_code == 0
+    assert encrypt.exists()
+    result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="password\n")
+    assert result.exit_code == 0
+    assert restore.read_bytes() == data
+
+def test_empty_file(tmp_path : Path) -> None:
+    source = tmp_path / "test.txt"
+    encrypt = tmp_path / "test.shareme"
+    restore = tmp_path / "restored.txt"
+    source.write_bytes(b"")
+    result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
+    assert result.exit_code == 0
+    assert encrypt.exists()
+    result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="password\n")
+    assert result.exit_code == 0
+    assert restore.read_bytes() == b""
+
