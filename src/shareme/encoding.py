@@ -24,5 +24,10 @@ def encodeStream(source : BinaryIO, target : TextIO, chunckSize : int = 1024*102
             target.write(base64.urlsafe_b64encode(dataBuf[:useSz]).decode("ascii"))
             pending = dataBuf[useSz:]
     if pending:
-        target.write
+        target.write(base64.urlsafe_b64encode(pending).decode("ascii"))
+
+def decodeStream(source : TextIO, target : BinaryIO, chunkSize : int = 1024*1024) -> None:
+    pending = ""
+    while True:
+        textBuf = 
     
