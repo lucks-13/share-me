@@ -25,7 +25,11 @@ def read_file_name(meta_buf : bytes) -> str:
         raise sharemeerror("Empty encrypted filename.") from exc
     return name_str
 
-
+def make_op_name(name_str : str) -> str:
+    c_name = Path(name_str).name
+    if c_name in {"",".",".."}:
+        raise sharemeerror("Invalid output filename.")
+    return c_name
 
 def mk_encrypt_path(out_path : Path) -> Path:
     if out_path.name in {"", ".", ".."}:

@@ -11,7 +11,7 @@ def decode(text : str) -> bytes:
         return base64.urlsafe_b64decode(text.encode("ascii"))
     except (UnicodeEncodeError, binascii.Error, ValueError) as exc:
         raise invalidsharemeerror("Invalid ShareMe encoding.") from exc
-
+    
 def encode_stream(source : BinaryIO, target : TextIO, chunk_size : int = 1024*1024) -> None:
     pending = b""
     while True:
