@@ -12,5 +12,8 @@ def decode(text : str) -> bytes:
     except (UnicodeEncodeError, binascii.Error, ValueError) as exc:
         raise InvalidShareMeError("Invalid ShareMe encoding.") from exc
 
-def encodeStream(source : BinaryIO, target : BinaryIO, ) -> 
+def encodeStream(source : BinaryIO, target : TextIO, chunckSize : int = 1024*1024) -> None:
+    pending = b""
+    while True:
+        dataBuf = source
     
