@@ -35,15 +35,15 @@ def makeopname(namestr : str) -> str:
 def encrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), outpath : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
     if not inpath.is_file():
         raise typer.BadParameter("Input path must be a file.")
-    passin = getpass("Password ")
+    pass_in = getpass("Password ")
     passchk = getpass("Confirm Password ")
-    if passin != passchk:
+    if pass_in != passchk:
         raise typer.BadParameter("Passwords do not match.")
     if outpath.exists():
         raise typer.BadParameter(f"Output file already exists : {outpath}")
     filesz = inpath.stat().st_size
     saltbuf = gen_salt()
-    keybuf = kdfkey(passin, saltbuf)
+    keybuf = kdfkey(pass_in, saltbuf)
     noncepfx = gennoncepfx()
     metanonce = genmetanonce()
     namebuf = inpath.name.encode("utf-8")
@@ -83,9 +83,9 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             metabuf = rawin.read(hdr.metasz)
             if len(metabuf) < hdr.metasz:
                 raise typer.BadParameter("Truncated metadata.")
-            passin = getpass("Password ")
+            pass_in = getpass("Password ")
             try:
-                keybuf = kdfkey(passin, hdr.saltbuf)
+                keybuf = kdfkey(pass_in, hdr.saltbuf)
                 namebuf = openmeta(keybuf, hdr.metanonce, metabuf)        
             except InvalidTag as exc:
                 raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc

@@ -12,8 +12,8 @@ chunksz = 1024 * 1024
 def gen_salt() -> bytes:
     return os.urandom(saltlen)
 
-def kdfkey(passin : str, saltbuf : bytes) -> bytes:
-    return hash_secret_raw(secret=passin.encode("utf-8"), salt= saltbuf, time_cost=3, memory_cost=64*1024, parallelism=2, hash_len=keylen, type=Type.ID)
+def kdfkey(pass_in : str, saltbuf : bytes) -> bytes:
+    return hash_secret_raw(secret=pass_in.encode("utf-8"), salt= saltbuf, time_cost=3, memory_cost=64*1024, parallelism=2, hash_len=keylen, type=Type.ID)
 
 def gennoncepfx() -> bytes:
     return os.urandom(8)
