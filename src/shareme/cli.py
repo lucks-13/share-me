@@ -87,17 +87,14 @@ def decrypt(inpath : Path = typer.Argument(..., exists=True, readable=True), out
             try:
                 keybuf = kdfkey(passin, hdr.saltbuf)
                 namebuf = openmeta(keybuf, hdr.metanonce, metabuf)        
-
-            
-        # chunkbuf = rawbuf[metaend:]
-        # 
-        # 
-        # namestr = readfilename(namebuf)
-        # if outpath is None:
-        #     outpath = Path(makeOpname(namestr))
-        # if outpath.exists():
-        #     raise typer.BadParameter(f"Output file already exists : {outpath}")
-        # outpath.parent.mkdir(parents=True, exist_ok=True)
+            except InvalidTag as exc:
+                raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
+            namestr = readfilename(namebuf)
+            if outpath is None:
+                outpath = Path(makeopname(namestr))
+            if outpath.exists():
+                raise typer.BadParameter(f"Output file already exists : {outpath}")
+            outpath.parent.mkdir(parents=True, exist_ok=True)
         # with tempfile.NamedTemporaryFile(mode="wb", dir=outpath.parent, prefix=f"{outpath.name}.", suffix=".tmp", delete=False) as tempfile:
         #     temppath = Path(tempfile.name)
         #     try:
