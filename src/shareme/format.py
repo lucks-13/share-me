@@ -1,6 +1,6 @@
 import struct
 from dataclasses import dataclass
-from .crypto import saltlen, noncelen
+from .crypto import salt_len, noncelen
 
 magic = b"share-me"
 v = 1
@@ -16,7 +16,7 @@ class Hdr:
     metasz : int
 
 def packhdr(hdr : Hdr) -> bytes:
-    if len(hdr.saltbuf) != saltlen:
+    if len(hdr.saltbuf) != salt_len:
         raise ValueError("Invalid salt size.")
     if len(hdr.noncepfx) != 8:
         raise ValueError("Invalid nonce prefix size.")
@@ -36,7 +36,7 @@ def readhdr(databuf : bytes) -> Hdr:
         raise ValueError("Invalid ShareMe magic.")
     if ver != v:
         raise ValueError("Unsupported ShareMe Version.")
-    if len(saltbuf) != saltlen:
+    if len(saltbuf) != salt_len:
         raise ValueError("Invalid salt size.")
     if len(metanonce) != noncelen:
         raise ValueError("Invalid metadata nonce size.")

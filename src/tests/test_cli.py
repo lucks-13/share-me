@@ -76,15 +76,11 @@ def test_corrupt_file(tmp_path : Path) -> None:
 def test_encryption(tmp_path : Path) -> None:
     source = tmp_path / "test.txt"
     encrypt_1 = tmp_path / "test_1.shareme"
-    encrypt_2 = tmp_path / "test_1.shareme"
-    
-
-
-    
+    encrypt_2 = tmp_path / "test_2.shareme"
     source.write_text("Test Message", encoding="utf-8")
-    result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
+    result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt_1)], input="password\npassword\n")
     assert result.exit_code == 0
-    assert encrypt.exists()
-    result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="password\n")
+    result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt_2)], input="password\npassword\n")
     assert result.exit_code == 0
-    assert restore.read_text(encoding="utf-8") == "Test Message"
+    assert encrypt_1.read_bytes() != encrypt_2.read_bytes()
+
