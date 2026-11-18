@@ -14,7 +14,7 @@ def test_help() -> None:
 def test_encrypt_and_decrypt(tmp_path : Path) -> None:
     source = tmp_path / "test.txt"
     encrypt = tmp_path / "test.shareme"
-    restore = tmp_path / "restored.txt"
+    restore = tmp_path / "restored"
     source.write_text("Test Message", encoding="utf-8")
     result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
     assert result.exit_code == 0
@@ -26,7 +26,7 @@ def test_encrypt_and_decrypt(tmp_path : Path) -> None:
 def test_binary_file(tmp_path : Path) -> None:
     source = tmp_path / "test.bin"
     encrypt = tmp_path / "test.shareme"
-    restore = tmp_path / "restored.bin"
+    restore = tmp_path / "restored"
     data = bytes(range(256))*100
     source.write_bytes(data)
     result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
@@ -39,7 +39,7 @@ def test_binary_file(tmp_path : Path) -> None:
 def test_video_file(tmp_path : Path) -> None:
     source = tmp_path / "test.mp4"
     encrypt = tmp_path / "test.shareme"
-    restore = tmp_path / "restored.mp4"
+    restore = tmp_path / "restored"
     data = b"\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00mp42isom\x00\x00\x00\x08mdat"
     source.write_bytes(data)
     result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
@@ -52,7 +52,7 @@ def test_video_file(tmp_path : Path) -> None:
 def test_empty_file(tmp_path : Path) -> None:
     source = tmp_path / "test.txt"
     encrypt = tmp_path / "test.shareme"
-    restore = tmp_path / "restored.txt"
+    restore = tmp_path / "restored"
     source.write_bytes(b"")
     result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="password\npassword\n")
     assert result.exit_code == 0
@@ -64,7 +64,7 @@ def test_empty_file(tmp_path : Path) -> None:
 def test_wrong_password(tmp_path : Path) -> None:
     source = tmp_path / "test.txt"
     encrypt = tmp_path / "test.shareme"
-    restore = tmp_path / "restored.txt"
+    restore = tmp_path / "restored"
     source.write_text("Test Message", encoding="utf-8")
     result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="correct\ncorrect\n")
     assert result.exit_code == 0
@@ -77,7 +77,7 @@ def test_corrupt_file(tmp_path : Path) -> None:
     source = tmp_path / "test.txt"
     encrypt = tmp_path / "test.shareme"
     corrupt = tmp_path / "corrupt.shareme"
-    restore = tmp_path / "restored.txt"
+    restore = tmp_path / "restored"
     source.write_text("Test Message", encoding="utf-8")
     result = runner.invoke(app, ["encrypt", str(source), "-o", str(encrypt)], input="correct\ncorrect\n")
     assert result.exit_code == 0
@@ -101,7 +101,7 @@ def test_encryption(tmp_path : Path) -> None:
 def test_large_file(tmp_path : Path) -> None:
     source = tmp_path / "test.bin"
     encrypt = tmp_path / "test.shareme"
-    restore = tmp_path / "restored.bin"
+    restore = tmp_path / "restored"
     data = bytes(range(256))*409600 # 100 Mb
     # data = bytes(range(256))*20971520 # 5 Gb
     # data = bytes(range(256))*41943040 # 10 Gb

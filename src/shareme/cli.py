@@ -83,7 +83,7 @@ def decrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), ou
     with in_path.open("r", encoding="ascii") as source:
         prefix = source.read(len("ShareMe : "))
         if prefix != "ShareMe : ":
-            typer.BadParameter("Invalid ShareMe file.")
+            raise typer.BadParameter("Invalid ShareMe file.")
         with tempfile.TemporaryFile() as raw_in:
             try:
                 decode_stream(source, raw_in)
