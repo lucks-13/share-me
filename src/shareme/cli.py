@@ -99,10 +99,10 @@ def write_atomic(dest : Path, reader) -> None:
         if temp_path is not None:
             temp_path.unlink(missing_ok=True)
         raise typer.BadParameter(str(exc)) from exc
-    
+
 @app.command()
 def encrypt(in_path : str = typer.Argument(...), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
-    files = split_csv_path(in_path)
+    files = split_csv_path([in_path])
     if not files:
         raise typer.BadParameter("At least one input file is required.")
     for f in files:
@@ -150,7 +150,7 @@ def encrypt(in_path : str = typer.Argument(...), out_path : Path = typer.Option(
 
 @app.command()
 def decrypt(in_path : str = typer.Argument(...), out_path : str | None = typer.Option(None, "--output", "-o")) -> None:
-    archives = split_csv_path(in_path)
+    archives = split_csv_path([in_path])
     if not archives:
         raise typer.BadParameter("At least one input file is required.")
     for arch in archives:
