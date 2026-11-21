@@ -205,7 +205,13 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
                         if dest.exists():
                             raise typer.BadParameter(f"Output file already exists : {dest}")
                         resolved.append((entry_name, entry_sz, dest))
-                    w
+                    with tempfile.TemporaryFile() as c_out:
+                        try:
+                            open_stream(raw_in, c_out, key_buf, hdr.nonce_pfx, hdr.file_sz)
+                        except (ValueError, sharemeerror) as exc:
+                            raise typer.BadParameter(str(exc)) from exc
+                        c_out.seek(0)
+                        written : 
                 
 
 
