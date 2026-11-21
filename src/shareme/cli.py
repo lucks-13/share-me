@@ -87,19 +87,22 @@ def write_atomic(dest : Path, reader) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     temp_path : Path | None = None
     try:
-        temp_file = tempfile.NamedTemporaryFile(mode="wb", dir=dest.parent, prefix=f"{dest.name}.", suffix=".tmp", delete=False) as temp_file:
-            temp_path = Path(temp_file.name)
+        temp_file = tempfile.NamedTemporaryFile(mode="wb", dir=dest.parent, prefix=f"{dest.name}.", suffix=".tmp", delete=False)
+        temp_path = Path(temp_file.name)
+        try:
             reader(temp_file)
+        finally:
+            temp_file.close()
         temp_path.replace(dest)
     except InvalidTag as exc:
         if temp_path is not None:
             temp_path.unlink(missing_ok=True)
         raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
-    except (ValueError,sharemeerror) as exc:
+    except (ValueError,sharemeerror, OSError) as exc:
         if temp_path is not None:
             temp_path.unlink(missing_ok=True)
         raise typer.BadParameter(str(exc)) from exc
-
+    
 @app.command()
 def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
     files = split_csv_path(in_path)
