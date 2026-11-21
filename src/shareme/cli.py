@@ -147,7 +147,7 @@ def encrypt(in_path : str = typer.Argument(...), out_path : Path = typer.Option(
             encode_stream(raw_out, target)
             target.write("\n")
     typer.echo(f"Encrypted : {', '.join(str(p) for p in files)} -> {out_path}")
-    
+
 @app.command()
 def decrypt(in_path : str = typer.Argument(...), out_path : str | None = typer.Option(None, "--output", "-o")) -> None:
     archives = split_csv_path(in_path)
