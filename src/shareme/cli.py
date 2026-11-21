@@ -165,7 +165,14 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
     for idx, arch in enumerate(archives):
         out_target = target[idx] if target else None
         with arch.open("r", encoding="ascii") as source:
-            prefix = source.read(len())
+            prefix = source.read(len("ShareMe : "))
+            if prefix != "ShareMe : ":
+                raise typer.BadParameter("Invalid ShareMe file.")
+            with tempfile.TemporaryFile() as raw_in:
+                try:
+                    decode_stream(source, raw_in)
+                except sharemeerror as exc:
+                    raise typer.BadParameter(str(exc)) from exc
 
 
 if __name__ == "__main__":
