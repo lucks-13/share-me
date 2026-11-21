@@ -101,7 +101,7 @@ def write_atomic(dest : Path, reader) -> None:
         raise typer.BadParameter(str(exc)) from exc
     
 @app.command()
-def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
+def encrypt(in_path : list[str] = typer.Argument(...), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
     files = split_csv_path(in_path)
     if not files:
         raise typer.BadParameter("At least one input file is required.")
@@ -149,19 +149,21 @@ def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
     typer.echo(f"Encrypted : {', '.join(str(p) for p in files)} -> {out_path}")
 
 @app.command()
-def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True), out_path : str | None = typer.Option(None, "--output", "-o")) -> None:
+def decrypt(in_path : list[str] = typer.Argument(...), out_path : str | None = typer.Option(None, "--output", "-o")) -> None:
     archives = split_csv_path(in_path)
     if not archives:
         raise typer.BadParameter("At least one input file is required.")
     for arch in archives:
         if not arch.exists() or not arch.is_file():
             raise typer.BadParameter(f"Input path must be a file : {arch}")
+    
     target = split_csv_path([out_path]) if out_path else []
     if target and len(target) != len(archives):
         raise typer.BadParameter("Output count must match input file count.")
     pass_in = get_pass("Password ")
     for idx, arch in enumerate(archives):
         out_target = target[idx] if target else None
+        
         with arch.open("r", encoding="ascii") as source:
             prefix = source.read(len("ShareMe : "))
             if prefix != "ShareMe : ":
