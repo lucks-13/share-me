@@ -198,7 +198,14 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
                     write_atomic(dest, lambda tf : open_stream(raw_in, tf, key_buf, hdr.nonce_pfx, hdr.file_sz))
                     typer.echo(f"Decrypted : {arch} -> {dest}")
                 else:
-                    dest_dir = Path
+                    dest_dir = Path(".") if out_target is None else out_target
+                    resolved : list[tuple[str, int, Path]] = []
+                    for entry_name, entry_sz in bundle_entries:
+                        dest = dest_dir / entry_name
+                        if dest.exists():
+                            raise typer.BadParameter(f"Output file already exists : {dest}")
+                        resolved.append((entry_name, entry_sz, dest))
+                    w
                 
 
 
