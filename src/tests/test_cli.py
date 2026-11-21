@@ -119,4 +119,7 @@ def test_encrypt_and_decrypt_multiple_file(tmp_path : Path) -> None:
     out_base = tmp_path / "test"
     restore_dir = "restore"
     f1.write_text("Hello 1", encoding="utf-8")
-    f2.write_text("Hello 2", )
+    f2.write_text("Hello 2", encoding="utf-8")
+    res1 = runner.invoke(app, ["encrypt", f"{f1}, {f2}", "-o", str(out_base)], input="password\npassword\n")
+    assert res1.exit_code == 0
+    assert (tmp_path / "test.sha")
