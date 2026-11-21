@@ -54,6 +54,8 @@ share-me decrypt test.shareme -o restore
 
 make sure that you remember the password
 
+3. Multiple 
+
 # Algorithm used { for nerd }
 * argon2id for password based key derivation
 * aes-256-gcm for authenticated encryption
