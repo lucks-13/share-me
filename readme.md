@@ -75,6 +75,10 @@ share-me decrypt test.shareme, test1.shareme -o restore, restore1
 
 you can also decrypt all the files in a single folder
 
+```
+share-me decrypt test.shareme, test1.shareme -o restore
+```
+
 # Algorithm used { for nerd }
 * argon2id for password based key derivation
 * aes-256-gcm for authenticated encryption

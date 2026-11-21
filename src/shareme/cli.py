@@ -137,7 +137,7 @@ def encrypt(in_path : list[str] = typer.Argument(...), out_path : Path = typer.O
                     if not buf:
                         break
                     c_src.write(buf)
-        c_src.seek(0)    
+        c_src.seek(0)
         raw_out.write(pack_hdr(hdr))
         raw_out.write(meta_buf)
         seal_stream(c_src, raw_out, key_buf, nonce_pfx)
