@@ -199,7 +199,11 @@ def decrypt(in_path : str = typer.Argument(...), out_path : str | None = typer.O
                     d = make_op_name(name_str)
                     if out_dir is None:
                         dest = Path(d)
-
+                    elif len(archives) > 1 or (out_dir.exists() and out_dir.is_dir()):
+                        dest = out_dir / d
+                    else:
+                        dest = mk_restore_path(out_dir, name_str)
+                    if des
                     
                     if dest.exists():
                         raise typer.BadParameter(f"Output file already exists : {dest}")
