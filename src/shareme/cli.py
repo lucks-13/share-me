@@ -94,11 +94,19 @@ def write_atomic(dest : Path, reader) -> None:
     except InvalidTag as exc:
         if temp_path is not None:
             temp_path.unlink(missing_ok=True)
-        raise typer.BadParameter("Incorrect password or corr")
+        raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
+    except (ValueError,sharemeerror) as exc:
+        if temp_path is not None:
+            temp_path.unlink(missing_ok=True)
+        raise typer.BadParameter(str(exc)) from exc
 
 
 @app.command()
 def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
+    files = split_csv_path(in_path)
+    if not files:
+        raise typer.BadParameter("At least one input file is required.")
+    if 
     if not in_path.is_file():
         raise typer.BadParameter("Input path must be a file.")
     pass_in = get_pass("Password ")
