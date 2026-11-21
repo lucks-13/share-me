@@ -63,4 +63,4 @@ make sure that you remember the password
 * processinf files in chunks
 
 # Ai Disclosure
-i dont know Google chrome ai search comes under which catageory, i have used them and then few youtube tutorials and google searches. coz raw coding without any help {technically i did not reach that level of experience }
+I used gemini ai search as my learning assistant to understand concept, improve my code and logical thinking and to troubleshoot errors, ai guided me to build this project and explicitly told to help me only when i got stuck. 95 to 99 % of the code is Human coding. the ai just gave me instruction when i got struck.
