@@ -118,4 +118,5 @@ def test_encrypt_and_decrypt_multiple_file(tmp_path : Path) -> None:
     f2 = tmp_path / "test2.txt"
     out_base = tmp_path / "test"
     restore_dir = "restore"
-    f1.write_text
+    f1.write_text("Hello 1", encoding="utf-8")
+    f2.write_text("Hello 2", )
