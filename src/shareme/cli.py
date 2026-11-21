@@ -186,7 +186,12 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
                     raise typer.BadParameter("Truncated metadata.")
                 key_buf = kdf_key(pass_in, hdr.salt_buf)
                 try:
-                    plain_meta = open_meta(key_buf, hdr.meta_)
+                    plain_meta = open_meta(key_buf, hdr.meta_nonce, meta_buf)
+                except InvalidTag as exc:
+                    raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
+                bundle_entries = parse_meta_bundle(plain_meta)
+                if bundle_entries
+                
 
 
 if __name__ == "__main__":
