@@ -116,6 +116,7 @@ def test_large_file(tmp_path : Path) -> None:
 def test_encrypt_and_decrypt_multiple_file(tmp_path : Path) -> None:
     f1 = tmp_path / "file1" / "test1.txt"
     f2 = tmp_path / "file2" / "test2.txt"
+    f1
     out_base = tmp_path / "test"
     restore_dir = "restore"
     f1.write_text("Hello 1", encoding="utf-8")
@@ -137,4 +138,7 @@ def test_decrypt_multiple_archives(tmp_path : Path) -> None:
     runner.invoke(app, ["encrypt", str(s2), "-o", str(tmp_path / "test2.shareme")], input="paasword\npassword\n")
     r1 = tmp_path / "restore1"
     r2 = tmp_path / "restore2"
-    res = runner.invoke(app, )
+    res = runner.invoke(app, ["decrypt", f"{tmp_path / 'test1.shareme'}, {tmp_path / 'test2.shareme'}", "-o", f"{r1}, {r2}"], input="password\n")
+    assert res.exit_code == 0
+    assert r1.read_text(encoding="utf-8") == "Hello 1"
+    assert r2.read_text(encoding="utf-8") == "Hello 2"
