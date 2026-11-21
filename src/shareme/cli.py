@@ -179,7 +179,14 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
                     raise typer.BadParameter("ShareMe file is too short.")
                 try:
                     hdr = read_hdr(header_buf)
-                    
+                except ValueError as exc:
+                    raise typer.BadParameter(str(exc)) from exc
+                meta_buf = raw_in.read(hdr.meta_sz)
+                if len(meta_buf) < hdr.meta_sz:
+                    raise typer.BadParameter("Truncated metadata.")
+                key_buf = kdf_key(pass_in, hdr.salt_buf)
+                try:
+                    plain_meta = open_meta(key_buf, hdr.meta_)
 
 
 if __name__ == "__main__":
