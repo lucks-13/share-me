@@ -43,12 +43,7 @@ def mk_restore_path(out_path : Path, name_str : str) -> Path:
     base_name = Path(out_path).name
     if base_name in {"", ".", ".."}:
         raise sharemeerror("Invalid output filename.")
-    if out_path.suffix:
-        return out_path
-    ext = Path(name_str).suffix
-    if not ext:
-        return out_path
-    return out_path.with_name(base_name + ext)
+    return out_path
 
 def split_csv_path(raw : list[str] | None) -> list[Path]:
     if not raw:
