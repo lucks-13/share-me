@@ -156,7 +156,12 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
     if not archives:
         raise typer.BadParameter("At least one input file is required.")
     for arch in archives:
-        if not 
+        if not arch.exists() or not arch.is_file():
+            raise typer.BadParameter(f"Input path must be a file : {arch}")
+    target = split_csv_path(out_path)
+    if t
+
+        
     with in_path.open("r", encoding="ascii") as source:
         prefix = source.read(len("ShareMe : "))
         if prefix != "ShareMe : ":
