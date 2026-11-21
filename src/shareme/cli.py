@@ -190,7 +190,11 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
                 except InvalidTag as exc:
                     raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
                 bundle_entries = parse_meta_bundle(plain_meta)
-                if bundle_entries
+                if bundle_entries is None:
+                    name_str = read_file_name(plain_meta)
+                    dest = Path(make_op_name(name_str)) if out_target is None else mk_restore_path(out_target, name_str)
+                    if dest.exists():
+                        raise typer.BadParameter(f"")
                 
 
 
