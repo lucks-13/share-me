@@ -87,7 +87,15 @@ def write_atomic(dest : Path, reader) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     temp_path : Path | None = None
     try:
-        with tempfile.NamedTemporaryFile(mode="wb", dir=dest.parent, prefix=f"{}")
+        with tempfile.NamedTemporaryFile(mode="wb", dir=dest.parent, prefix=f"{dest.name}.") as temp_file:
+            temp_path = Path(temp_file.name)
+            reader(temp_file)
+        temp_path.replace(dest)
+    except InvalidTag as exc:
+        if temp_path is not None:
+            temp_path.unlink(missing_ok=True)
+        raise typer.BadParameter("Incorrect password or corr")
+
 
 @app.command()
 def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
