@@ -159,8 +159,18 @@ def decrypt(in_path : str = typer.Argument(...), out_path : str | None = typer.O
     target = split_csv_path([out_path]) if out_path else []
     if len(target) > 1 and len(target) != len(archives):
         raise typer.BadParameter("Output count must match input file count or be a single folder.")
-    pass_in = get_pass("Password ")
     for idx, arch in enumerate(archives):
+        if not target:
+            out_dir : Path | None = None
+        elif len(target) == 1:
+            out_dir = target[0]
+        else:
+            out_dir = target[idx]
+        p_l = "Password " if len(archives) == 1 else f"Password ({arch.name}) "
+
+
+
+
         out_target = target[idx] if target else None
         with arch.open("r", encoding="ascii") as source:
             prefix = source.read(len("ShareMe : "))
