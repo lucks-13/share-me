@@ -148,10 +148,15 @@ def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
             target.write("ShareMe : ")
             encode_stream(raw_out, target)
             target.write("\n")
-    typer.echo(f"Encrypted : {in_path} -> {out_path}")
+    typer.echo(f"Encrypted : {', '.join(str(p) for p in files)} -> {out_path}")
 
 @app.command()
-def decrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path | None = typer.Option(None, "--output", "-o")) -> None:
+def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True), out_path : list[str] | None = typer.Option(None, "--output", "-o")) -> None:
+    archives = split_csv_path(in_path)
+    if not archives:
+        raise typer.BadParameter("At least one input file is required.")
+    for arch in archives:
+        if not 
     with in_path.open("r", encoding="ascii") as source:
         prefix = source.read(len("ShareMe : "))
         if prefix != "ShareMe : ":
