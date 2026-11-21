@@ -222,9 +222,8 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
                                     tf.write(chunk)
                                     remain -= len(chunk)
                             write_atomic(dest, copy_slice)
-                            w
-                
-
-
+                            written.append(dest)
+                    typer.echo(f"Decrypted : {arch} -> {', '.join(str(p) for p in written)}")
+                    
 if __name__ == "__main__":
     app()
