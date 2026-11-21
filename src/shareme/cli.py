@@ -102,7 +102,7 @@ def write_atomic(dest : Path, reader) -> None:
 
 
 @app.command()
-def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
+def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
     files = split_csv_path(in_path)
     if not files:
         raise typer.BadParameter("At least one input file is required.")
@@ -120,11 +120,12 @@ def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), ou
     key_buf = kdf_key(pass_in, salt_buf)
     nonce_pfx = gen_nonce_pfx()
     meta_nonce = gen_meta_nonce()
-
     if len(files) == 1:
         s = files[0]
         file_sz = s.stat().st_size
-        name_buf = s.name
+        name_buf = s.name.encode("utf-8")
+    else:
+        manifest = [{"name" : i.name, "size" : i.stat().st_size} for i in files]
 
     name_buf = in_path.name.encode("utf-8")
     meta_buf = seal_meta(key_buf, meta_nonce, name_buf)
