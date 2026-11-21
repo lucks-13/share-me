@@ -116,9 +116,10 @@ def test_large_file(tmp_path : Path) -> None:
 def test_encrypt_and_decrypt_multiple_file(tmp_path : Path) -> None:
     f1 = tmp_path / "file1" / "test1.txt"
     f2 = tmp_path / "file2" / "test2.txt"
-    f1
+    f1.parent.mkdir(parents=True, exist_ok=True)
+    f2.parent.mkdir(parents=True, exist_ok=True)
     out_base = tmp_path / "test"
-    restore_dir = "restore"
+    restore_dir = tmp_path / "restore"
     f1.write_text("Hello 1", encoding="utf-8")
     f2.write_text("Hello 2", encoding="utf-8")
     res1 = runner.invoke(app, ["encrypt", f"{f1}, {f2}", "-o", str(out_base)], input="password\npassword\n")
@@ -134,8 +135,10 @@ def test_decrypt_multiple_archives(tmp_path : Path) -> None:
     s2 = tmp_path / "b.txt"
     s1.write_text("Hello 1", encoding="utf-8")
     s2.write_text("Hello 2", encoding="utf-8")
-    runner.invoke(app, ["encrypt", str(s1), "-o", str(tmp_path / "test1.shareme")], input="paasword\npassword\n")
-    runner.invoke(app, ["encrypt", str(s2), "-o", str(tmp_path / "test2.shareme")], input="paasword\npassword\n")
+    a1 = runner.invoke(app, ["encrypt", str(s1), "-o", str(tmp_path / "test1.shareme")], input="pasword\npassword\n")
+    a2 = runner.invoke(app, ["encrypt", str(s2), "-o", str(tmp_path / "test2.shareme")], input="pasword\npassword\n")
+    assert a1.exit_code == 0
+    assert a2.exit_code == 0
     r1 = tmp_path / "restore1"
     r2 = tmp_path / "restore2"
     res = runner.invoke(app, ["decrypt", f"{tmp_path / 'test1.shareme'}, {tmp_path / 'test2.shareme'}", "-o", f"{r1}, {r2}"], input="password\n")
