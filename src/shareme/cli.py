@@ -194,7 +194,11 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
                     name_str = read_file_name(plain_meta)
                     dest = Path(make_op_name(name_str)) if out_target is None else mk_restore_path(out_target, name_str)
                     if dest.exists():
-                        raise typer.BadParameter(f"")
+                        raise typer.BadParameter(f"Output file already exists : {dest}")
+                    write_atomic(dest, lambda tf : open_stream(raw_in, tf, key_buf, hdr.nonce_pfx, hdr.file_sz))
+                    typer.echo(f"Decrypted : {arch} -> {dest}")
+                else:
+                    dest_dir = Path
                 
 
 
