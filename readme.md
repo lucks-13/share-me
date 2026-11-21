@@ -38,7 +38,7 @@ share-me --help
 # Available commands.
 1. Encrypt a file.
 ```
-share-me encrypt test.txt -o test.shareme
+share-me encrypt test.txt -o test
 ```
 ShareMe will ask for the password and confirm password confirmation.
 
