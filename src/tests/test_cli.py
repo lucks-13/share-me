@@ -122,4 +122,8 @@ def test_encrypt_and_decrypt_multiple_file(tmp_path : Path) -> None:
     f2.write_text("Hello 2", encoding="utf-8")
     res1 = runner.invoke(app, ["encrypt", f"{f1}, {f2}", "-o", str(out_base)], input="password\npassword\n")
     assert res1.exit_code == 0
-    assert (tmp_path / "test.sha")
+    assert (tmp_path / "test.shareme").exists()
+    res2 = runner.invoke(app, ["decrypt", str(tmp_path / "test.shareme"), "-o", str(restore_dir)], input="password\n")
+    assert res2.exit_code == 0
+    assert (restore_dir / "test1.txt").read_text(encoding = "utf-8") == "Hello 1"
+    assert (restore_dir / "test2.txt").read_text(encoding = "utf-8") == "Hello 2"
