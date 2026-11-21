@@ -62,6 +62,9 @@ share-me encrypt test1.txt, test2.txt -o test.shareme
 ShareMe will ask for the password and password confirmation.
 
 4. Decrypt Multiple shareme Files.
+```
+share-me decrypt test.shareme, test1.shareme -o restore, restore1
+```
 
 # Algorithm used { for nerd }
 * argon2id for password based key derivation
