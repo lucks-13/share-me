@@ -173,6 +173,13 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
                     decode_stream(source, raw_in)
                 except sharemeerror as exc:
                     raise typer.BadParameter(str(exc)) from exc
+                raw_in.seek(0)
+                header_buf = raw_in.read(hdr_sz)
+                if len(header_buf) < hdr_sz:
+                    raise typer.BadParameter("ShareMe file is too short.")
+                try:
+                    hdr = read_hdr(header_buf)
+                    
 
 
 if __name__ == "__main__":
