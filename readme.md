@@ -51,6 +51,7 @@ test.shareme
 ```
 share-me decrypt test.shareme -o restore
 ```
+
 make sure that you remember the password
 
 # Algorithm used { for nerd }

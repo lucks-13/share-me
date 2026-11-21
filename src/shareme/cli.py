@@ -47,6 +47,8 @@ def mk_restore_path(out_path : Path, name_str : str) -> Path:
         return out_path
     return out_path.with_name(base_name + ext)
 
+def split_csv_path(raw : )
+
 @app.command()
 def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
     if not in_path.is_file():
