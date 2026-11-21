@@ -203,14 +203,12 @@ def decrypt(in_path : str = typer.Argument(...), out_path : str | None = typer.O
                         dest = out_dir / d
                     else:
                         dest = mk_restore_path(out_dir, name_str)
-                    if des
-                    
                     if dest.exists():
                         raise typer.BadParameter(f"Output file already exists : {dest}")
                     write_atomic(dest, lambda tf : open_stream(raw_in, tf, key_buf, hdr.nonce_pfx, hdr.file_sz))
                     typer.echo(f"Decrypted : {arch} -> {dest}")
                 else:
-                    dest_dir = Path(".") if out_target is None else out_target
+                    dest_dir = Path(".") if out_dir is None else out_dir
                     resolved : list[tuple[str, int, Path]] = []
                     for entry_name, entry_sz in bundle_entries:
                         dest = dest_dir / entry_name
