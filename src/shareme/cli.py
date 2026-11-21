@@ -130,14 +130,19 @@ def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
         name_buf = json.dumps(manifest, separators=(",",":")).encode("utf-8")
     meta_buf = seal_meta(key_buf, meta_nonce, name_buf)
     hdr = Hdr(salt_buf=salt_buf, nonce_pfx=nonce_pfx, file_sz=file_sz, meta_nonce=meta_nonce, meta_sz=len(meta_buf))
-    with tempfile.TemporaryFile() as src:
-        
-    
+    with tempfile.TemporaryFile() as source:
+        for f in files:
+            with f.open("rb") as src_part:
+                while True:
+                    buf = src_part.read(1024 * 1024)
+                    if not buf:
+                        break
+                    source.write(buf)
+        source.seek(0)    
     with tempfile.TemporaryFile() as raw_out:
         raw_out.write(pack_hdr(hdr))
         raw_out.write(meta_buf)
-        with in_path.open("rb") as source:
-            seal_stream(source, raw_out, key_buf, nonce_pfx)
+        seal_stream(source, raw_out, key_buf, nonce_pfx)
         raw_out.seek(0)
         with out_path.open("w", encoding="ascii", newline="\n") as target:
             target.write("ShareMe : ")
