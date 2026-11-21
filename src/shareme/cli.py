@@ -167,11 +167,7 @@ def decrypt(in_path : str = typer.Argument(...), out_path : str | None = typer.O
         else:
             out_dir = target[idx]
         p_l = "Password " if len(archives) == 1 else f"Password ({arch.name}) "
-
-
-
-
-        out_target = target[idx] if target else None
+        pass_in = get_pass(p_l)
         with arch.open("r", encoding="ascii") as source:
             prefix = source.read(len("ShareMe : "))
             if prefix != "ShareMe : ":
@@ -200,7 +196,11 @@ def decrypt(in_path : str = typer.Argument(...), out_path : str | None = typer.O
                 bundle_entries = parse_meta_bundle(plain_meta)
                 if bundle_entries is None:
                     name_str = read_file_name(plain_meta)
-                    dest = Path(make_op_name(name_str)) if out_target is None else mk_restore_path(out_target, name_str)
+                    d = make_op_name(name_str)
+                    if out_dir is None:
+                        dest = Path(d)
+
+                    
                     if dest.exists():
                         raise typer.BadParameter(f"Output file already exists : {dest}")
                     write_atomic(dest, lambda tf : open_stream(raw_in, tf, key_buf, hdr.nonce_pfx, hdr.file_sz))
