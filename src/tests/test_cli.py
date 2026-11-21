@@ -141,7 +141,7 @@ def test_decrypt_multiple_archives(tmp_path : Path) -> None:
     assert a2.exit_code == 0
     r1 = tmp_path / "restore1"
     r2 = tmp_path / "restore2"
-    res = runner.invoke(app, ["decrypt", f"{tmp_path / 'test1.shareme'}, {tmp_path / 'test2.shareme'}", "-o", f"{r1}, {r2}"], input="password\n")
+    res = runner.invoke(app, ["decrypt", f"{tmp_path / 'test1.shareme'}, {tmp_path / 'test2.shareme'}", "-o", f"{r1}, {r2}"], input="password\npassword\n")
     assert res.exit_code == 0
     assert (r1 / "a.txt").read_text(encoding="utf-8") == "Hello 1"
     assert (r2 / "b.txt").read_text(encoding="utf-8") == "Hello 2"
