@@ -157,8 +157,8 @@ def decrypt(in_path : str = typer.Argument(...), out_path : str | None = typer.O
         if not arch.exists() or not arch.is_file():
             raise typer.BadParameter(f"Input path must be a file : {arch}")
     target = split_csv_path([out_path]) if out_path else []
-    if target and len(target) != len(archives):
-        raise typer.BadParameter("Output count must match input file count.")
+    if len(target) > 1 and len(target) != len(archives):
+        raise typer.BadParameter("Output count must match input file count or be a single folder.")
     pass_in = get_pass("Password ")
     for idx, arch in enumerate(archives):
         out_target = target[idx] if target else None
