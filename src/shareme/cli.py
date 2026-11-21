@@ -152,14 +152,14 @@ def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
     typer.echo(f"Encrypted : {', '.join(str(p) for p in files)} -> {out_path}")
 
 @app.command()
-def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True), out_path :  | None = typer.Option(None, "--output", "-o")) -> None:
+def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True), out_path : str | None = typer.Option(None, "--output", "-o")) -> None:
     archives = split_csv_path(in_path)
     if not archives:
         raise typer.BadParameter("At least one input file is required.")
     for arch in archives:
         if not arch.exists() or not arch.is_file():
             raise typer.BadParameter(f"Input path must be a file : {arch}")
-    target = split_csv_path(out_path)
+    target = split_csv_path([out_path]) if out_path else []
     if target and len(target) != len(archives):
         raise typer.BadParameter("Output count must match input file count.")
     pass_in = get_pass("Password ")
