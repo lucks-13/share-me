@@ -129,16 +129,16 @@ def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
         name_buf = json.dumps(manifest, separators=(",",":")).encode("utf-8")
     meta_buf = seal_meta(key_buf, meta_nonce, name_buf)
     hdr = Hdr(salt_buf=salt_buf, nonce_pfx=nonce_pfx, file_sz=file_sz, meta_nonce=meta_nonce, meta_sz=len(meta_buf))
-    with tempfile.TemporaryFile() as source:
+
+    with tempfile.TemporaryFile() as c_src, tempfile.TemporaryFile() as raw_out:
         for f in files:
             with f.open("rb") as src_part:
                 while True:
                     buf = src_part.read(1024 * 1024)
                     if not buf:
                         break
-                    source.write(buf)
-        source.seek(0)    
-    with tempfile.TemporaryFile() as raw_out:
+                    c_src.write(buf)
+        c_src.seek(0)    
         raw_out.write(pack_hdr(hdr))
         raw_out.write(meta_buf)
         seal_stream(source, raw_out, key_buf, nonce_pfx)
@@ -147,8 +147,10 @@ def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
             target.write("ShareMe : ")
             encode_stream(raw_out, target)
             target.write("\n")
+
+
     typer.echo(f"Encrypted : {', '.join(str(p) for p in files)} -> {out_path}")
-    
+
 @app.command()
 def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True), out_path : list[str] | None = typer.Option(None, "--output", "-o")) -> None:
     archives = split_csv_path(in_path)
