@@ -49,7 +49,7 @@ test.shareme
 
 2. Decrypt a file.
 ```
-share-me decrypt test.shareme -o restore.txt
+share-me decrypt test.shareme -o restore
 ```
 make sure that you remember the password
 
