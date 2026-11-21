@@ -112,5 +112,3 @@ def test_large_file(tmp_path : Path) -> None:
     result = runner.invoke(app, ["decrypt", str(encrypt), "-o", str(restore)], input="password\n")
     assert result.exit_code == 0
     assert restore.read_bytes() == data
-
-def

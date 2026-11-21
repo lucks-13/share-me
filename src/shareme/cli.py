@@ -100,7 +100,6 @@ def write_atomic(dest : Path, reader) -> None:
             temp_path.unlink(missing_ok=True)
         raise typer.BadParameter(str(exc)) from exc
 
-
 @app.command()
 def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
     files = split_csv_path(in_path)
@@ -149,7 +148,7 @@ def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
             encode_stream(raw_out, target)
             target.write("\n")
     typer.echo(f"Encrypted : {', '.join(str(p) for p in files)} -> {out_path}")
-
+    
 @app.command()
 def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True), out_path : list[str] | None = typer.Option(None, "--output", "-o")) -> None:
     archives = split_csv_path(in_path)
@@ -224,6 +223,6 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
                             write_atomic(dest, copy_slice)
                             written.append(dest)
                     typer.echo(f"Decrypted : {arch} -> {', '.join(str(p) for p in written)}")
-                    
+
 if __name__ == "__main__":
     app()
