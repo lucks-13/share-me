@@ -106,9 +106,9 @@ def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), ou
     files = split_csv_path(in_path)
     if not files:
         raise typer.BadParameter("At least one input file is required.")
-    if 
-    if not in_path.is_file():
-        raise typer.BadParameter("Input path must be a file.")
+    for f in files:
+        if not f.exists() or not f.is_file():
+            raise typer.BadParameter(f"Input path must be a file : {f}")
     pass_in = get_pass("Password ")
     pass_chk = get_pass("Confirm Password ")
     if pass_in != pass_chk:
@@ -116,11 +116,16 @@ def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), ou
     out_path = mk_encrypt_path(out_path)
     if out_path.exists():
         raise typer.BadParameter(f"Output file already exists : {out_path}")
-    file_sz = in_path.stat().st_size
     salt_buf = gen_salt()
     key_buf = kdf_key(pass_in, salt_buf)
     nonce_pfx = gen_nonce_pfx()
     meta_nonce = gen_meta_nonce()
+
+    if len(files) == 1:
+        s = files[0]
+        file_sz = s.stat().st_size
+        name_buf = s.name
+
     name_buf = in_path.name.encode("utf-8")
     meta_buf = seal_meta(key_buf, meta_nonce, name_buf)
     hdr = Hdr(salt_buf=salt_buf, nonce_pfx=nonce_pfx, file_sz=file_sz, meta_nonce=meta_nonce, meta_sz=len(meta_buf))
