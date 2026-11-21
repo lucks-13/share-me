@@ -211,7 +211,18 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
                         except (ValueError, sharemeerror) as exc:
                             raise typer.BadParameter(str(exc)) from exc
                         c_out.seek(0)
-                        written : 
+                        written : list[Path] = []
+                        for _, entry_sz, dest in resolved:
+                            def copy_slice(tf, sz = entry_sz) -> None:
+                                remain = sz
+                                while remain > 0:
+                                    chunk = c_out.read(min(remain, 1024 * 1024))
+                                    if not chunk:
+                                        raise ValueError("File Size Verification failed.")
+                                    tf.write(chunk)
+                                    remain -= len(chunk)
+                            write_atomic(dest, copy_slice)
+                            w
                 
 
 
