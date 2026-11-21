@@ -113,4 +113,9 @@ def test_large_file(tmp_path : Path) -> None:
     assert result.exit_code == 0
     assert restore.read_bytes() == data
 
-def test_encrypt_and_decrypt_multiple_file(tmp_path : Path) ->
+def test_encrypt_and_decrypt_multiple_file(tmp_path : Path) -> None:
+    f1 = tmp_path / "test1.txt"
+    f2 = tmp_path / "test2.txt"
+    out_base = tmp_path / "test"
+    restore_dir = "restore"
+    f1.write_text
