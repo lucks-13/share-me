@@ -159,58 +159,14 @@ def decrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
         if not arch.exists() or not arch.is_file():
             raise typer.BadParameter(f"Input path must be a file : {arch}")
     target = split_csv_path(out_path)
-    if t
+    if target and len(target) != len(archives):
+        raise typer.BadParameter("Output count must match input file count.")
+    pass_in = get_pass("Password ")
+    for idx, arch in enumerate(archives):
+        out_target = target[idx] if target else None
+        with arch.open("r", encoding="ascii") as source:
+            prefix = source.read(len())
 
-        
-    with in_path.open("r", encoding="ascii") as source:
-        prefix = source.read(len("ShareMe : "))
-        if prefix != "ShareMe : ":
-            raise typer.BadParameter("Invalid ShareMe file.")
-        with tempfile.TemporaryFile() as raw_in:
-            try:
-                decode_stream(source, raw_in)
-            except sharemeerror as exc:
-                raise typer.BadParameter(str(exc)) from exc
-            raw_in.seek(0)
-            header_buf = raw_in.read(hdr_sz)
-            if len(header_buf) < hdr_sz:
-                raise typer.BadParameter("ShareMe file is too short.")
-            try:
-                hdr = read_hdr(header_buf)
-            except ValueError as exc:
-                raise typer.BadParameter(str(exc)) from exc
-            meta_buf = raw_in.read(hdr.meta_sz)
-            if len(meta_buf) < hdr.meta_sz:
-                raise typer.BadParameter("Truncated metadata.")
-            pass_in = get_pass("Password ")
-            try:
-                key_buf = kdf_key(pass_in, hdr.salt_buf)
-                name_buf = open_meta(key_buf, hdr.meta_nonce, meta_buf)        
-            except InvalidTag as exc:
-                raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
-            name_str = read_file_name(name_buf)
-            if out_path is None:
-                out_path = Path(make_op_name(name_str))
-            else:
-                out_path = mk_restore_path(out_path, name_str)
-            if out_path.exists():
-                raise typer.BadParameter(f"Output file already exists : {out_path}")
-            out_path.parent.mkdir(parents=True, exist_ok=True)
-            temp_path = None
-            try:
-                with tempfile.NamedTemporaryFile(mode="wb", dir=out_path.parent, prefix=f"{out_path.name}.", suffix=".tmp", delete=False) as temp_file:
-                    temp_path = Path(temp_file.name)
-                    open_stream(raw_in, temp_file, key_buf, hdr.nonce_pfx, hdr.file_sz)
-                temp_path.replace(out_path)
-            except InvalidTag as exc:
-                if temp_path is not None:
-                    temp_path.unlink(missing_ok=True)
-                    raise typer.BadParameter("Incorrect password or corrupted ShareMe data.") from exc
-            except (ValueError, sharemeerror) as exc:
-                if temp_path is not None:
-                    temp_path.unlink(missing_ok=True)
-                    raise typer.BadParameter(str(exc)) from exc
-            typer.echo(f"Decrypted : {in_path} -> {out_path}")     
 
 if __name__ == "__main__":
     app()
