@@ -78,7 +78,16 @@ def parse_meta_bundle(meta_buf : bytes) -> list[tuple[str, int]] | None:
             return None
         name_str = i["name"]
         size_val = i["size"]
-        if not isinstance
+        if not isinstance(name_str, str) or not name_str or not isinstance(size_val, int) or size_val < 0:
+            return None
+        parsed.append((make_op_name(name_str), size_val))
+    return parsed
+
+def write_atomic(dest : Path, reader) -> None:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    temp_path : Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="wb", dir=dest.parent, prefix=f"{}")
 
 @app.command()
 def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
