@@ -87,7 +87,7 @@ def write_atomic(dest : Path, reader) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     temp_path : Path | None = None
     try:
-        with tempfile.NamedTemporaryFile(mode="wb", dir=dest.parent, prefix=f"{dest.name}.") as temp_file:
+        temp_file = tempfile.NamedTemporaryFile(mode="wb", dir=dest.parent, prefix=f"{dest.name}.", suffix=".tmp", delete=False) as temp_file:
             temp_path = Path(temp_file.name)
             reader(temp_file)
         temp_path.replace(dest)
@@ -129,7 +129,6 @@ def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
         name_buf = json.dumps(manifest, separators=(",",":")).encode("utf-8")
     meta_buf = seal_meta(key_buf, meta_nonce, name_buf)
     hdr = Hdr(salt_buf=salt_buf, nonce_pfx=nonce_pfx, file_sz=file_sz, meta_nonce=meta_nonce, meta_sz=len(meta_buf))
-
     with tempfile.TemporaryFile() as c_src, tempfile.TemporaryFile() as raw_out:
         for f in files:
             with f.open("rb") as src_part:
@@ -141,14 +140,12 @@ def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
         c_src.seek(0)    
         raw_out.write(pack_hdr(hdr))
         raw_out.write(meta_buf)
-        seal_stream(source, raw_out, key_buf, nonce_pfx)
+        seal_stream(c_src, raw_out, key_buf, nonce_pfx)
         raw_out.seek(0)
         with out_path.open("w", encoding="ascii", newline="\n") as target:
             target.write("ShareMe : ")
             encode_stream(raw_out, target)
             target.write("\n")
-
-
     typer.echo(f"Encrypted : {', '.join(str(p) for p in files)} -> {out_path}")
 
 @app.command()
