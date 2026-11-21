@@ -59,12 +59,21 @@ make sure that you remember the password
 ```
 share-me encrypt test1.txt, test2.txt -o test.shareme
 ```
+you can add as much as file you want to encrypt in a single file
+
 ShareMe will ask for the password and password confirmation.
 
 4. Decrypt Multiple shareme Files.
+
+you can decrypt all the files in seperate folder
+restore { folder } -> decrypted test.shareme
+restore1 { folder } -> decrypted test1.shareme
+
 ```
 share-me decrypt test.shareme, test1.shareme -o restore, restore1
 ```
+
+you can also decrypt all the files in a single folder
 
 # Algorithm used { for nerd }
 * argon2id for password based key derivation
