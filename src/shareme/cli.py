@@ -1,5 +1,6 @@
 import tempfile
 import typer
+import json
 from cryptography.exceptions import InvalidTag
 from pathlib import Path
 from .crypto import gen_meta_nonce, gen_nonce_pfx, gen_salt, kdf_key, open_meta, seal_meta
@@ -58,7 +59,18 @@ def split_csv_path(raw : list[str] | None) -> list[Path]:
                 res.append(Path(c))
     return res
 
-def parse_meta_bundle(meta_buf : bytes) -> 
+def parse_meta_bundle(meta_buf : bytes) -> list[tuple[str, int]] | None:
+    try:
+        text = meta_buf.decode("utf-8")
+    except UnicodeDecodeError:
+        return None
+    if not text.startswith("["):
+        return None
+    try:
+        entries = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(entries, )
 
 @app.command()
 def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
