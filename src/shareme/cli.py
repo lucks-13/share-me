@@ -126,10 +126,13 @@ def encrypt(in_path : list[str] = typer.Argument(..., exists=True, readable=True
         name_buf = s.name.encode("utf-8")
     else:
         manifest = [{"name" : i.name, "size" : i.stat().st_size} for i in files]
-
-    name_buf = in_path.name.encode("utf-8")
+        file_sz = sum(item["size"] for item in manifest)
+        name_buf = json.dumps(manifest, separators=(",",":")).encode("utf-8")
     meta_buf = seal_meta(key_buf, meta_nonce, name_buf)
     hdr = Hdr(salt_buf=salt_buf, nonce_pfx=nonce_pfx, file_sz=file_sz, meta_nonce=meta_nonce, meta_sz=len(meta_buf))
+    with tempfile.TemporaryFile() as src:
+        
+    
     with tempfile.TemporaryFile() as raw_out:
         raw_out.write(pack_hdr(hdr))
         raw_out.write(meta_buf)
