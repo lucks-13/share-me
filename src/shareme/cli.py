@@ -70,7 +70,15 @@ def parse_meta_bundle(meta_buf : bytes) -> list[tuple[str, int]] | None:
         entries = json.loads(text)
     except json.JSONDecodeError:
         return None
-    if not isinstance(entries, )
+    if not isinstance(entries, list) or not entries:
+        return None
+    parsed : list[tuple[str, int]] = []
+    for i in entries:
+        if not isinstance(i, dict) or "name" not in i or "size" not in i:
+            return None
+        name_str = i["name"]
+        size_val = i["size"]
+        if not isinstance
 
 @app.command()
 def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
