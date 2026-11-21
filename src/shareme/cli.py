@@ -47,7 +47,18 @@ def mk_restore_path(out_path : Path, name_str : str) -> Path:
         return out_path
     return out_path.with_name(base_name + ext)
 
-def split_csv_path(raw : )
+def split_csv_path(raw : list[str] | None) -> list[Path]:
+    if not raw:
+        return []
+    res : list[Path] = []
+    for i in raw:
+        for p in i.split(","):
+            c = p.strip()
+            if c:
+                res.append(Path(c))
+    return res
+
+def parse_meta_bundle(meta_buf : bytes) -> 
 
 @app.command()
 def encrypt(in_path : Path = typer.Argument(..., exists=True, readable=True), out_path : Path = typer.Option(Path("shareme.txt"), "--output", "-o")) -> None:
